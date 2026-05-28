@@ -1,0 +1,4 @@
+package run_test
+depends = base, hedgehog, contrib, idris2-chromogeometry, idris2-Multiset, linear, ref1, idris2-QuickCheck
+main = Main
+executable = run_test
