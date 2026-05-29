@@ -173,3 +173,68 @@ isSynchronised sub pip =
       pipCoords = map (fst . fst) (multisetToList pip)
   in all (\g => elem g subNodes) pipCoords
 
+-----------------------------------------------------------------------
+-- 8. STATE SERIALIZATION BRIDGE (JSON Export)
+-----------------------------------------------------------------------
+
+||| Formats a List of String elements with a separator.
+private
+join : String -> List String -> String
+join sep [] = ""
+join sep [x] = x
+join sep (x :: xs) = x ++ sep ++ join sep xs
+
+||| Serializes a Geometry (Pixel Integer) to JSON.
+public export
+serializeGeometry : Geometry -> String
+serializeGeometry (MkPixel s t) =
+  "{\"src\":" ++ show s ++ ",\"tgt\":" ++ show t ++ "}"
+
+||| Serializes a polynomial term to JSON.
+public export
+serializeTerm : ((Nat, Nat), Integer) -> String
+serializeTerm ((alpha, beta), count) =
+  "{\"alpha\":" ++ show alpha ++ ",\"beta\":" ++ show beta ++ ",\"count\":" ++ show count ++ "}"
+
+||| Serializes an Amplitude (IntPolynumber) to JSON.
+public export
+serializeAmplitude : Amplitude -> String
+serializeAmplitude amp =
+  "[" ++ join "," (map serializeTerm (multisetToList amp)) ++ "]"
+
+||| Serializes a SparseMaxel state vector element to JSON.
+public export
+serializeMaxelItem : ((Geometry, Amplitude), Integer) -> String
+serializeMaxelItem ((geom, amp), count) =
+  "{\"geom\":" ++ serializeGeometry geom ++
+  ",\"amplitude\":" ++ serializeAmplitude amp ++
+  ",\"count\":" ++ show count ++ "}"
+
+||| Serializes a SparseMaxel state vector to JSON.
+public export
+serializeSparseMaxel : SparseMaxel -> String
+serializeSparseMaxel maxel =
+  "[" ++ join "," (map serializeMaxelItem (multisetToList maxel)) ++ "]"
+
+||| Serializes a Substrate causal edge to JSON.
+public export
+serializeEdge : ((Geometry, Geometry), Integer) -> String
+serializeEdge ((parent, child), count) =
+  "{\"parent\":" ++ serializeGeometry parent ++
+  ",\"child\":" ++ serializeGeometry child ++
+  ",\"count\":" ++ show count ++ "}"
+
+||| Serializes a Substrate causal graph to JSON.
+public export
+serializeSubstrate : Substrate -> String
+serializeSubstrate sub =
+  "[" ++ join "," (map serializeEdge (multisetToList sub)) ++ "]"
+
+||| Serializes the complete UniverseState to a structured JSON string.
+public export
+serializeUniverseState : UniverseState -> String
+serializeUniverseState (MkUniverseState sub stateVec) =
+  "{\"substrate\":" ++ serializeSubstrate sub ++
+  ",\"stateVector\":" ++ serializeSparseMaxel stateVec ++ "}"
+
+
