@@ -17,8 +17,8 @@ import Math.Polynumber
 import Math.Multiset
 import Math.IntPolynumber
 import Math.Chromogeometry
-import Physics.System.CosmicPartition
-import Physics.Scales.ScaleTrajectory
+import System.CosmicPartition
+import Scale.ScaleTrajectory
 
 %default covering
 

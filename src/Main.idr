@@ -2,7 +2,7 @@ module Main
 
 import Simplex.Core
 import Simplex.SigmaLinear
-import Physics.SigmaBridge
+import SigmaBridge
 import Math.Chromogeometry
 import Math.Multiset
 
