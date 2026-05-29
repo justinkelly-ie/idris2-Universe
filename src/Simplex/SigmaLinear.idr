@@ -6,21 +6,6 @@ import Simplex.Core
 -- PHASE 1: CORE FOUNDATIONAL TYPES (The Linear Dependent Multiset)
 -----------------------------------------------------------------------
 
-||| A strictly linear dependent signed multiset.
-||| The exact elements and their integer multiplicities are tracked in the type signature.
-||| The `1` multiplicity guarantees un-forgeable physical conservation and enables O(1) in-place mutation.
-public export
-data LDepMultiset : (a : Type) -> (contents : List (a, Integer)) -> Type where
-  ||| The vacuum state.
-  LEmptyM : LDepMultiset a []
-  
-  ||| Adds an element, strictly consuming the previous state linearly.
-  LAddM : {0 rest : List (a, Integer)} ->
-          (item : a) -> 
-          (count : Integer) -> 
-          (1 prev : LDepMultiset a rest) -> 
-          LDepMultiset a ((item, count) :: rest)
-
 ||| A Directed Edge (1-Simplex) pairing a source and target vertex coordinate.
 public export
 0 Edge : Type
