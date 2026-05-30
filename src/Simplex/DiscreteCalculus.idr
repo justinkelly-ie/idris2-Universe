@@ -31,7 +31,7 @@ record DiracHole a where
   leftContext  : List a
   rightContext : List a
 
-||| The topological derivative of a list of states.
+||| The multiset derivative of a list of states.
 ||| Differentiates a sequence by isolating a single state as the focal point,
 ||| leaving behind a Dirac Hole (the derivative) and the extracted particle.
 public export

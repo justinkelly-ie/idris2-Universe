@@ -29,7 +29,7 @@ LDepSubstrate contents = LDepMultiset Edge contents
 -- PHASE 2: MATHEMATICAL SPECIFICATIONS (The Formal Layer)
 -----------------------------------------------------------------------
 
-||| Computes the topological reduction of a Substrate boundary to a SparseMaxel boundary.
+||| Computes the multiset coordinate reduction of a Substrate boundary to a SparseMaxel boundary.
 ||| A directed edge (src, tgt) with count c adds `c` to tgt and subtracts `c` from src.
 public export
 computeBoundaryIndex : List (Edge, Integer) -> List (Simplex.Core.Geometry, Integer)

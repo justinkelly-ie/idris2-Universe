@@ -18,7 +18,7 @@ import Math.SpreadPolynumber
 |||
 ||| Hydrogen is the first stable element on the 137-Grid. It consists of
 ||| a single proton (1 unit of baryonic lag) bound to a single electron
-||| (the simplest non-fractional topological knot on the n=3 MatterGate).
+||| (the simplest non-fractional multiset coordinate lock on the n=3 MatterGate).
 |||
 ||| Structural properties:
 |||   - Z=1: the unit baryon — the multiplicative identity of the elemental scale

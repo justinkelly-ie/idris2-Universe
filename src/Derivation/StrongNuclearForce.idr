@@ -26,8 +26,8 @@ import Math.SpreadPolynumber
 
 ||| A topological hole created by extracting a fractional state
 public export
-record TopologicalDefect where
-  constructor MkTopologicalDefect
+record MultisetDefect where
+  constructor MkMultisetDefect
   ||| The amount of unmet fractional tension
   vacuumTension : Double
 

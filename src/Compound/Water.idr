@@ -58,7 +58,7 @@ import Math.Chromogeometry
 |||
 ||| Electron Interaction
 |||
-||| The Electron is the simplest non-fractional topological knot on the
+||| The Electron is the simplest non-fractional multiset coordinate lock on the
 ||| MatterGate (n=3). In Water, each O-H bond is mediated by an electron
 ||| shared between the Hydrogen proton and Oxygen's electron cloud.
 |||

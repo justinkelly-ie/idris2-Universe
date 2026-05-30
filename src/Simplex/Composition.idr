@@ -9,7 +9,7 @@ import public Data.List
 %default total
 
 -----------------------------------------------------------------------
--- COMPOSITE STATE (Generic Platonic Field Topology)
+-- COMPOSITE STATE (Generic Platonic Field Configuration)
 -----------------------------------------------------------------------
 
 ||| A CompositeState represents a pure, stateless mathematical field topology —

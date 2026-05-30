@@ -39,7 +39,7 @@ record CellState where
   generation   : Nat
   ||| The current generation encoded as a Spread Polynomial.
   statePoly    : IntPolynumber
-  ||| The underlying lattice topology (Support of the Maxel) embedding the 128+27 states.
+  ||| The underlying lattice multiset configuration (Support of the Maxel) embedding the 128+27 states.
   ||| Note: This is explicitly a Multiset Simplex.Core.Geometry (0-Chain of vertices/dust).
   ||| Because it lacks 1-Cell causal edges, this state is physically "frozen"
   ||| and possesses no relational time until it is bound to a Substrate graph.
@@ -74,7 +74,7 @@ public export
 pivotFlavor : Flavor -> CellState -> CellState
 pivotFlavor newF (MkCellState gen p supp _) = MkCellState gen p supp newF
 
-||| Extracts the primary topological pixel from a CellState.
+||| Extracts the primary multiset coordinate pixel from a CellState.
 public export
 extractPixel : CellState -> Simplex.Core.Geometry
 extractPixel state =

@@ -18,13 +18,13 @@ import Math.Fraction
 |||
 ||| In the LUniverse model, "mass" is strictly equivalent to topological 
 ||| length (number of unresolved integer nodes acting as drag).
-||| By mapping the electron as a baseline 1D topological knot, and the proton 
+||| By mapping the electron as a baseline 1D multiset coordinate lock, and the proton 
 ||| as a composite 3-quark structure bound by the S_5 and S_3 Prime Gates, we 
 ||| can calculate the exact structural length ratio between their Multiset vectors!
 
 public export
 interface CalculatesMassRatio a where
-  ||| Computes the relative topological length between two states
+  ||| Computes the relative multiset multiplicity length between two states
   calculateMassRatio : a -> a -> Fraction
 
 public export

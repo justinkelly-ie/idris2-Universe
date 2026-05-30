@@ -30,7 +30,7 @@ isPureRadiation (MkRadiation m) =
 
 ||| Audits the Boole-Möbius resolution remainder of the ensemble.
 ||| Pure radiation is a "zero-sum" state in the 2D plane — it yields
-||| exactly a zero remainder (no topological leftovers or persistent knots).
+||| exactly a zero remainder (no multiset leftovers or persistent knots).
 public export
 isZeroRemainder : Radiation -> Bool
 isZeroRemainder (MkRadiation m) =

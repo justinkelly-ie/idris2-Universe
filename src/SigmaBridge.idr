@@ -52,7 +52,7 @@ public export
 sigmaFreezeMaxel : Simplex.SigmaLinear.DynamicUniverse (Simplex.Core.Geometry, Simplex.Core.Amplitude) -> Simplex.Core.SparseMaxel
 sigmaFreezeMaxel (c ** m) = fromList (freezeLDep m)
 
-||| Freezes a Geometry-only topological boundary into a legacy SparseMaxel.
+||| Freezes a Geometry-only multiset boundary into a legacy SparseMaxel.
 public export
 sigmaFreezeGeometryMaxel : Simplex.SigmaLinear.DynamicSparseMaxel -> Simplex.Core.SparseMaxel
 sigmaFreezeGeometryMaxel (c ** m) = 

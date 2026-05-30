@@ -1,4 +1,4 @@
-# idris2-Universe
+# idris2-LUniverse
 
 **The core natural science simulation engine for [Nat-Science](https://github.com/justinkelly-ie/Nat-Science).**
 
@@ -10,7 +10,7 @@
 
 ## Overview
 
-`idris2-Universe` is the physics, chemistry, biology, and neurology engine within the **Nat-Science** project — a unified discrete natural science model built entirely over Natural Numbers (`Nat`).
+`idris2-LUniverse` is the physics, chemistry, biology, and neurology engine within the **Nat-Science** project — a unified discrete natural science model built entirely over Natural Numbers (`Nat`).
 
 Every physical concept — particles, bonds, elements, cosmological epochs, biological folds — is modelled as a pure algebraic constraint on a flat integer multiset grid. No floating point. No arbitrary constants. No continuous fields.
 

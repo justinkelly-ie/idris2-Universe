@@ -17,7 +17,7 @@ import Data.Linear
 ||| a mass of ~0.511 MeV/c^2.
 |||
 ||| In the Primorial Architecture, the electron is NOT a point particle. It is 
-||| the simplest possible stable, non-fractional topological knot on the 
+||| the simplest possible stable, non-fractional multiset coordinate lock on the 
 ||| 137-Grid. It exists on the n=3 Matter Gate (Spatial Triad), providing it 
 ||| with visible coordinate geometry, but lacks the complex fractional breakdown 
 ||| of the n=5 Charge Gate (Quarks).

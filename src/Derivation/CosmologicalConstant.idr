@@ -23,7 +23,7 @@ import System.CosmicPartition
 |||
 ||| In the LUniverse model, the universe is NOT continuous or infinite.
 ||| It is structurally bounded by the 210 Prime Gate permutations. The vacuum 
-||| energy is simply the topological debt limit of the fundamental gates, completely
+||| energy is simply the multiset multiplicity debt limit of the fundamental gates, completely
 ||| zeroing out the 10^120 error by proving the grid cannot physically exceed
 ||| a finite, calculable state space before snapping (Grid Fracture).
 

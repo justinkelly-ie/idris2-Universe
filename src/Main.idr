@@ -31,7 +31,7 @@ main = do
   let frozenMaxel = sigmaFreezeMaxel nextU
   putStrLn "4. Frozen back to legacy SparseMaxel."
   
-  putStrLn "--- Testing Topological Boundary Operator ---"
+  putStrLn "--- Testing Multiset Boundary Operator ---"
   
   -- Create two distinct geometry nodes (Vertices)
   let nodeA = MkPixel 0 0
@@ -47,7 +47,7 @@ main = do
   -- Melt into Dynamic Substrate
   let dynamicChain = sigmaMeltChain legacySubstrate
   
-  -- Execute Topological Boundary Operator (O(1) Linear shredding)
+  -- Execute Multiset Boundary Operator (O(1) Linear shredding)
   let dynamicBoundary = runBoundary dynamicChain
   putStrLn "2. Executed runBoundary (Linear Shredding mapped to Topo Spec)."
   

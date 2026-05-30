@@ -10,7 +10,7 @@ import Math.SpreadPolynumber
 ||| Captures how 1D chains of substrate units (e.g., amino acids, nucleotides) 
 ||| dynamically fold into complex 3D geometric structures. In the LUniverse model, 
 ||| folding is not a continuous thermodynamic accident; it is the geometric execution 
-||| of a Spread Polynomial $S_n(s)$ attempting to neutralize topological tension 
+||| of a Spread Polynomial $S_n(s)$ attempting to neutralize multiset coordinate tension 
 ||| (Leibniz Lag) over a finite integer grid.
 |||
 ||| QTT LINEARITY & UNIQUENESS:
