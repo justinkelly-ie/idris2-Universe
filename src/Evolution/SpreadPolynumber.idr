@@ -57,8 +57,39 @@ generateLocalSpreadPoly metric substrate currentGeom =
   in evalSpreadPolyExpr symbolicExpr
 
 
+||| Dynamically deforms the causal Substrate graph in response to the active 
+||| mass-energy density in the State Vector. 
+|||
+||| Spacetime curvature (causal edge density) co-evolves with matter: edges 
+||| connecting high-energy coordinates are structurally reinforced (their 
+||| multiplicities increase), letting the universe speak for itself.
+public export
+deformSubstrate : Substrate -> SparseMaxel -> Substrate
+deformSubstrate substrate stateVector =
+  let edges  = multisetToList substrate
+      states = multisetToList stateVector
+      
+      -- Helper to extract the mass-energy count at a given coordinate
+      getEnergy : Pixel Integer -> Integer
+      getEnergy geom =
+        case filter (\((g, _), _) => g == geom) states of
+          ((_, c) :: _) => c
+          []            => 0
+          
+      -- Deform each edge multiplicity proportionally to source/target energy
+      deformedEdges = map (\((src, tgt), count) =>
+                             let energySrc = getEnergy src
+                                 energyTgt = getEnergy tgt
+                             in ((src, tgt), count + energySrc + energyTgt)
+                          ) edges
+  in fromList deformedEdges
+
+
 ||| Drives a complete generational evolution step where time-propagation is 
 ||| entirely localized and driven by the restored SpreadPolynumber bridge.
+|||
+||| The causal Substrate graph co-evolves dynamically with the active 
+||| mass-energy in the state vector (deformSubstrate).
 public export
 stepUniverseLocalized : Integer
                      -> Metric
@@ -79,4 +110,9 @@ stepUniverseLocalized capacityLimit metric currentSubstrate stateVector =
                                        stabilizedVisible = evaluateResonance capacityLimit 13 geom visibleSpace
                                    in multisetToList (addMultiset latentSpace stabilizedVisible))
                                  evolvedStates
-  in (currentSubstrate, fromList processedItems)
+                                 
+      nextField = fromList processedItems
+      
+      -- 3. Dynamically co-evolve the Substrate graph with the active field energy
+      deformedSub = deformSubstrate currentSubstrate nextField
+  in (deformedSub, nextField)
