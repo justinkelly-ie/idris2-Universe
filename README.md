@@ -28,7 +28,7 @@ Every physical concept — particles, bonds, elements, cosmological epochs, biol
 
 ```
 src/
-├── Simplex/              ← Topological substrate
+├── Simplex/              ← Discrete multiset substrate
 │   ├── Core.idr              Multiset type aliases, Geometry, Amplitude
 │   ├── SigmaLinear.idr       Linear Dependent Multisets, Dynamic DPairs
 │   ├── Composition.idr
@@ -69,6 +69,8 @@ src/
 | Hydrogen bond is null vector (Red Q=0) | `prop_hydrogenBondIsIdentity` |
 | 76/137 scales gate-pure; 137 = decoherence | `coherentScaleCount` |
 | Observer epoch k=38 gate-pure; 137³⁸ ≈ 10⁸¹ | `prop_eddingtonIsCoherent` |
+| Spacetime deforms dynamically with mass-energy | `deformSubstrate` co-evolution |
+| Exact Chebyshev symbolic expression recurrence | `SpreadPolyExpr` expression |
 
 ---
 
