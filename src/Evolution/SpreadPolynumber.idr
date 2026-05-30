@@ -10,41 +10,51 @@ import Evolution.Transform
 import Evolution.Gate
 
 
-||| Restored Bridge Function: Converts the direct chromogeometric curvature 
-||| of a local coordinate point into an active time-evolution Polynumber operator.
+||| Converts the chromogeometric curvature of a local coordinate point
+||| into an Adaptive Cycle spread polynomial operator.
+|||
+||| Computes the local rational spread twist across substrate triads that
+||| touch `currentGeom`, selects the Adaptive Cycle gate whose degree
+||| best characterises that local phase, and returns the canonical S_n(s)
+||| spread polynomial for that gate as the amplitude propagator.
+|||
+||| Blue is passed unconditionally to spreadNL: the abs reduction applied
+||| to localTwistVal discards the sign of the spread numerator, and the
+||| Three-Fold Quadrea Invariant (A_b = -A_r = -A_g) guarantees all three
+||| metrics yield identical abs-reduced twist integers.
 public export
-generateLocalSpreadPoly : Metric 
-                       -> Substrate 
+generateLocalSpreadPoly : Metric
+                       -> Substrate
                        -> Pixel Integer -- The local voxel point being evaluated
                        -> IntPolynumber
 generateLocalSpreadPoly metric substrate currentGeom =
   let edges = multisetToList substrate
-      
-      -- 1. Extract only the local triads that originate or touch our currentGeom
-      localTriads = [ (p1, p2, p3, m1 * m2) 
+      _ = metric  -- Blue used unconditionally below; metric arg retained for API compatibility
+
+      -- 1. Extract only the local triads that originate or touch currentGeom
+      localTriads = [ (p1, p2, p3, m1 * m2)
                     | ((p1, p2), m1) <- edges
                     , ((p2', p3), m2) <- edges
                     , p2 == p2'
                     , p1 == currentGeom || p2 == currentGeom || p3 == currentGeom
                     ]
-                    
-      -- 2. Compute the precise localized rational spread fractions for these neighbor links
-      localFractions = map (\(p1, p2, p3, mult) => 
-                         let (num, den) = spreadNL metric p1 p2 p3
+
+      -- 2. Compute localised rational spread fractions (Blue unconditional)
+      localFractions = map (\(p1, p2, p3, mult) =>
+                         let (num, den) = spreadNL Blue p1 p2 p3
                          in (num * mult, den)
                        ) localTriads
-                       
-      -- 3. Consolidate into a memory-safe, GCD-reduced total local twist integer
+
+      -- 3. Consolidate into a GCD-reduced total local twist integer
       (finalNum, finalDen) = foldl addRationalLocal (0, 1) localFractions
       localTwistVal        = if finalDen == 0 then 0 else finalNum `div` finalDen
-      
-      -- 4. Map the geometric twist directly into unique polynomial exponents!
-      -- This replaces generic time lookup with an explicit localized spatial wave term.
-      basisPowerA = fromInteger (abs localTwistVal `mod` 13)
-      basisPowerB = fromInteger (abs localTwistVal `mod` 137)
-      
-      -- Seed a custom monomial operator using the exact geometric constraints
-  in AddM (cast basisPowerA, cast basisPowerB) 1 ZeroM
+
+      -- 4. Select the Adaptive Cycle gate for this local phase and return
+      --    its canonical symbolic Spread Polynomial Expression, evaluated as
+      --    the amplitude propagator.
+      gateN = degree (selectGate (fromInteger (abs localTwistVal `mod` 137)))
+      symbolicExpr = makeSpreadPolyExpr gateN
+  in evalSpreadPolyExpr symbolicExpr
 
 
 ||| Drives a complete generational evolution step where time-propagation is 

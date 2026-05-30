@@ -12,15 +12,15 @@ public export
 Edge = (Simplex.Core.Geometry, Simplex.Core.Geometry)
 
 -----------------------------------------------------------------------
--- TOPOLOGICAL ALIASES
+-- MULTISET ALIASES
 -----------------------------------------------------------------------
 
-||| The purely type-verified 0-Chain (replaces LCell0 logic)
+||| The purely type-verified Vertex Multiset (replaces LCell0 logic)
 public export
 0 LDepSparseMaxel : (contents : List (Simplex.Core.Geometry, Integer)) -> Type
 LDepSparseMaxel contents = LDepMultiset Simplex.Core.Geometry contents
 
-||| The purely type-verified 1-Chain (replaces runtime multiset edges)
+||| The purely type-verified Edge Multiset (replaces runtime multiset edges)
 public export
 0 LDepSubstrate : (contents : List (Edge, Integer)) -> Type
 LDepSubstrate contents = LDepMultiset Edge contents
@@ -74,20 +74,20 @@ stepUniverse (LAddM item count prev) = LAddM item (count + 1) (stepUniverse prev
 -- PHASE 4: DYNAMIC MACROS (The Sigma Layer)
 -----------------------------------------------------------------------
 
-||| The Dynamic 0-Chain.
+||| The Dynamic Vertex Multiset.
 ||| Wraps the linear structure in a Dependent Pair (DPair) so the compiler 
 ||| doesn't explode when the universe expands, while still formally proving execution.
 public export
 0 DynamicSparseMaxel : Type
 DynamicSparseMaxel = (c : List (Simplex.Core.Geometry, Integer) ** LDepSparseMaxel c)
 
-||| The Dynamic Substrate.
+||| The Dynamic Edge Substrate.
 public export
 0 DynamicSubstrate : Type
 DynamicSubstrate = (edges : List (Edge, Integer) ** LDepSubstrate edges)
 
-||| The Dynamic Boundary Wrapper.
-||| Unpacks the DPair, applies the topological math to the type index, 
+||| The Dynamic Causal Flow Boundary Wrapper.
+||| Unpacks the DPair, applies the causal boundary math to the type index, 
 ||| executes the linear physics in-place, and repacks it.
 public export
 runBoundary : DynamicSubstrate -> DynamicSparseMaxel

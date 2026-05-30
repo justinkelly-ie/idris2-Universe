@@ -151,8 +151,8 @@ stateLag m = multiplicityAll m
 
 ||| Restriction of a SparseMaxel to entries matching a specific Geometry.
 |||
-||| This is the sheaf restriction map: pulling back entries from a large
-||| open set to a smaller one. In multiset terms: filter by coordinate.
+||| This is the coordinate filter: pulling back entries from the global state vector
+||| to a specific coordinate pixel key. In multiset terms: filter by coordinate.
 |||
 public export
 restrictToPixel : Geometry -> SparseMaxel -> SparseMaxel
@@ -164,7 +164,7 @@ restrictToPixel geom pip =
 |||
 ||| A synchronised state guarantees the state vector does not reference a
 ||| location that has no causal history. An unsynchronised state
-||| indicates a torn sheaf — undefined physics.
+||| indicates a causal boundary violation — undefined physics.
 |||
 public export
 isSynchronised : Substrate -> SparseMaxel -> Bool

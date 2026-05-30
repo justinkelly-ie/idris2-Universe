@@ -28,12 +28,17 @@ translateState (MkPixel dx dy) m =
                             ) stateItems
   in fromList translatedState
 
-||| Computes the composite rational spread of the active coordinates in the state,
-||| which directly determines the structural folding locks at higher scales.
+||| Computes the composite rational spread of the active coordinates in the state.
+|||
+||| OPTIMIZATION (Three-Fold Quadrea Invariant):
+||| Because A_b = -A_r = -A_g, the absolute value of the spread numerator for any triad
+||| is identical across all three metrics. Since the degree is evaluated under the
+||| absolute value (e.g. in calculateFoldingStructure), we pass Blue unconditionally.
 public export
 computeStateSpread : Metric -> CompositeState -> (Integer, Integer)
 computeStateSpread metric m =
   let coords = map (fst . fst) (multisetToList m)
+      _ = metric -- Ignored by the Three-Fold Invariant
       -- Keep only unique coordinates (active nodes)
       uniqueCoords = nub coords
       -- Extract all triads of distinct coordinates (p1, p2, p3)
@@ -44,9 +49,9 @@ computeStateSpread metric m =
                , p1 /= p2, p2 /= p3, p3 /= p1
                ]
       
-      -- Helper function to destructure the triad and compute its spread
+      -- Helper function to destructure the triad and compute its spread (Blue unconditionally)
       getSpread : (Pixel Integer, Pixel Integer, Pixel Integer) -> (Integer, Integer)
-      getSpread (p1, p2, p3) = spreadNL metric p1 p2 p3
+      getSpread (p1, p2, p3) = spreadNL Blue p1 p2 p3
       
       -- Map triads to exact rational spreads
       spreadFractions = map getSpread triads

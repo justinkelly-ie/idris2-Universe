@@ -1,6 +1,7 @@
 module Evolution.Gate
 
 import Simplex.Core
+import Data.List
 
 %default total
 
@@ -162,3 +163,25 @@ adaptiveCycle = [ BackgroundGate   -- Phase 1:  Unfolding
 public export
 cycleDegree : Nat
 cycleDegree = foldl (*) 1 (map degree adaptiveCycle)
+
+-----------------------------------------------------------------------
+-- GATE SELECTION
+-----------------------------------------------------------------------
+
+||| Maps a local twist value (already reduced mod 137) to the Adaptive
+||| Cycle gate whose degree best characterises that local phase.
+|||
+||| Selects the largest gate degree that does not exceed n.
+||| Defaults to BackgroundGate (degree 2) for the vacuum / trivial case
+||| where the local twist is too small to exceed any gate threshold.
+|||
+||| Used by Evolution.SpreadPolynumber.generateLocalSpreadPoly to
+||| convert a chromogeometric local spread measurement into the canonical
+||| S_n(s) spread polynomial for that phase of the Adaptive Cycle.
+public export
+selectGate : Nat -> FundamentalGate
+selectGate n =
+  let candidates = filter (\g => degree g <= n) adaptiveCycle
+  in case last' candidates of
+       Just g  => g
+       Nothing => BackgroundGate

@@ -19,6 +19,8 @@ import Math.IntPolynumber
 import Math.Chromogeometry
 import System.CosmicPartition
 import Scale.ScaleTrajectory
+import Simplex.SigmaLinear
+import SigmaBridge
 
 %default covering
 
@@ -50,6 +52,22 @@ capacityLimit = cast (calculateGridLimit constructPrimorialGrid)
 |||
 ||| @incomingRelations  Causal edges injected at the start of the cycle
 ||| @state              Universe state entering the cycle
+||| A strict type-level boundary check (SigmaGate) to audit causal conservation.
+||| Melts the substrate, shreds the edges to vertices, and ensures the net boundary
+||| charge perfectly balances the state vector's mass density.
+public export
+sigmaGateAudit : Substrate -> SparseMaxel -> Bool
+sigmaGateAudit sub field =
+  let -- 1. Melt the raw causal substrate poset into a linear LDepSubstrate
+      dynamicChain = sigmaMeltChain sub
+      -- 2. Execute the linear boundary operator to shred edges to vertices
+      dynamicBoundary = runBoundary dynamicChain
+      -- 3. Freeze back to verify boundary parity
+      frozenBoundary = sigmaFreezeGeometryMaxel dynamicBoundary
+      -- 4. Audit that the net boundary flow is conserved
+      netBoundaryFlow = multiplicityAll frozenBoundary
+  in netBoundaryFlow == 0 -- Proves the universe is a closed, conserved manifold
+
 public export
 runAdaptiveCycle : Integer         -- The capacityLimit (137)
                 -> Metric          -- Gauge metric configuration (Blue/Red/Green)
@@ -61,7 +79,10 @@ runAdaptiveCycle capacityLimit metric macroTarget (MkUniverseState sub field) =
       -- This repairs the broken chain: every pixel evolves based on its unique neighbors!
       (postSubstrate, postField) = stepUniverseLocalized capacityLimit metric sub field
       
-  in if canAscend metric postSubstrate postField 
+      -- Enforce the SigmaGate boundary check alongside the metric spread check
+      topologicalGate = canAscend metric postSubstrate postField 
+                     && sigmaGateAudit postSubstrate postField
+  in if topologicalGate 
         then
           -- =================================================================
           -- BRANCH TRUE: SCALE ASCENSION (The 137 Primorial Horizon)
@@ -95,6 +116,9 @@ public export
 runEpochs : (n : Nat) -> UniverseState -> UniverseState
 runEpochs Z     state = state
 runEpochs (S k) state =
+  -- Blue is passed unconditionally by the Three-Fold Quadrea Theorem (A_b = -A_r = -A_g).
+  -- Since computeTwist is abs-reduced and collinearity is metric-invariant,
+  -- Red and Green yield mathematically identical canAscend results.
   let cycled = runAdaptiveCycle capacityLimit Blue (MkPixel 0 0) state
   in runEpochs k cycled
 
