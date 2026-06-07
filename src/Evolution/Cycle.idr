@@ -132,12 +132,10 @@ lstepUniverseLocalized : Integer
 lstepUniverseLocalized capacityLimit metric (MkLUniverseState substrate stateVector) =
   let MkLUnboxResult subList = lunboxLMultiset substrate
       MkLUnboxResult stateList = lunboxLMultiset stateVector
-      (nextSub, nextField) = stepUniverseLocalized capacityLimit metric (fromList subList) (fromList stateList)
-      nextEdges = multisetToList nextSub
-      nextContents = multisetToList nextField
-      newSubState = buildLDep nextEdges
-      newFieldState = buildLDep nextContents
-  in (nextEdges ** nextContents ** MkLUniverseState newSubState newFieldState)
+      (nextSubList, nextFieldList) = stepUniverseList capacityLimit metric subList stateList
+      newSubState = buildLDep nextSubList
+      newFieldState = buildLDep nextFieldList
+  in (nextSubList ** nextFieldList ** MkLUniverseState newSubState newFieldState)
 
 ||| A strictly linear version of runAdaptiveCycle.
 ||| Executes a fully verified in-place scale transition, collapsing the system's active
@@ -151,19 +149,21 @@ lrunAdaptiveCycle : Integer
 lrunAdaptiveCycle capacityLimit metric macroTarget (MkLUniverseState substrate stateVector) =
   let MkLUnboxResult subList = lunboxLMultiset substrate
       MkLUnboxResult stateList = lunboxLMultiset stateVector
-      (postSubstrate, postField) = stepUniverseLocalized capacityLimit metric (fromList subList) (fromList stateList)
+      (postSubList, postFieldList) = stepUniverseList capacityLimit metric subList stateList
+      postSubstrate = fromList postSubList
+      postField = fromList postFieldList
       topologicalGate = canAscend metric postSubstrate postField 
                      && sigmaGateAudit postSubstrate postField
   in if topologicalGate
         then
-          let postFieldL = buildLDep (multisetToList postField)
+          let postFieldL = buildLDep postFieldList
               ascendedFieldL = lascendScale macroTarget postFieldL
-              postSubL = buildLDep (multisetToList postSubstrate)
-          in (multisetToList postSubstrate ** computeAscendContents macroTarget (multisetToList postField) ** MkLUniverseState postSubL ascendedFieldL)
+              postSubL = buildLDep postSubList
+          in (postSubList ** computeAscendContents macroTarget postFieldList ** MkLUniverseState postSubL ascendedFieldL)
         else
-          let postFieldL = buildLDep (multisetToList postField)
-              postSubL = buildLDep (multisetToList postSubstrate)
-          in (multisetToList postSubstrate ** multisetToList postField ** MkLUniverseState postSubL postFieldL)
+          let postFieldL = buildLDep postFieldList
+              postSubL = buildLDep postSubList
+          in (postSubList ** postFieldList ** MkLUniverseState postSubL postFieldL)
 
 
 

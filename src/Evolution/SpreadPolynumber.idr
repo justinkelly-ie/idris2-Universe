@@ -10,27 +10,14 @@ import Evolution.Transform
 import Evolution.Gate
 
 
-||| Converts the chromogeometric curvature of a local coordinate point
-||| into an Adaptive Cycle spread polynomial operator.
-|||
-||| Computes the local rational spread twist across substrate triads that
-||| touch `currentGeom`, selects the Adaptive Cycle gate whose degree
-||| best characterises that local phase, and returns the canonical S_n(s)
-||| spread polynomial for that gate as the amplitude propagator.
-|||
-||| Blue is passed unconditionally to spreadNL: the abs reduction applied
-||| to localTwistVal discards the sign of the spread numerator, and the
-||| Three-Fold Quadrea Invariant (A_b = -A_r = -A_g) guarantees all three
-||| metrics yield identical abs-reduced twist integers.
+||| List-based helper for generateLocalSpreadPoly.
 public export
-generateLocalSpreadPoly : Metric
-                       -> Substrate
-                       -> Pixel Integer -- The local voxel point being evaluated
-                       -> IntPolynumber
-generateLocalSpreadPoly metric substrate currentGeom =
-  let edges = multisetToList substrate
-      _ = metric  -- Blue used unconditionally below; metric arg retained for API compatibility
-
+generateLocalSpreadPolyList : Metric
+                           -> List ((Geometry, Geometry), Integer)
+                           -> Pixel Integer
+                           -> IntPolynumber
+generateLocalSpreadPolyList metric edges currentGeom =
+  let _ = metric  -- Blue used unconditionally below; metric arg retained for API compatibility
       -- 1. Extract only the local triads that originate or touch currentGeom
       localTriads = [ (p1, p2, p3, m1 * m2)
                     | ((p1, p2), m1) <- edges
@@ -57,19 +44,24 @@ generateLocalSpreadPoly metric substrate currentGeom =
   in evalSpreadPolyExpr symbolicExpr
 
 
-||| Dynamically deforms the causal Substrate graph in response to the active 
-||| mass-energy density in the State Vector. 
-|||
-||| Spacetime curvature (causal edge density) co-evolves with matter: edges 
-||| connecting high-energy coordinates are structurally reinforced (their 
-||| multiplicities increase), letting the universe speak for itself.
+||| Converts the chromogeometric curvature of a local coordinate point
+||| into an Adaptive Cycle spread polynomial operator.
 public export
-deformSubstrate : Substrate -> Vexel -> Substrate
-deformSubstrate substrate stateVector =
-  let edges  = multisetToList substrate
-      states = multisetToList stateVector
-      
-      -- Helper to extract the mass-energy count at a given coordinate
+generateLocalSpreadPoly : Metric
+                       -> Substrate
+                       -> Pixel Integer
+                       -> IntPolynumber
+generateLocalSpreadPoly metric substrate currentGeom =
+  generateLocalSpreadPolyList metric (multisetToList substrate) currentGeom
+
+
+||| List-based helper for deformSubstrate.
+public export
+deformSubstrateList : List ((Geometry, Geometry), Integer)
+                    -> List ((Geometry, Amplitude), Integer)
+                    -> List ((Geometry, Geometry), Integer)
+deformSubstrateList edges states =
+  let -- Helper to extract the mass-energy count at a given coordinate
       getEnergy : Pixel Integer -> Integer
       getEnergy geom =
         case filter (\((g, _), _) => g == geom) states of
@@ -82,14 +74,44 @@ deformSubstrate substrate stateVector =
                                  energyTgt = getEnergy tgt
                              in ((src, tgt), count + energySrc + energyTgt)
                           ) edges
-  in fromList deformedEdges
+  in deformedEdges
+
+
+||| Dynamically deforms the causal Substrate graph in response to the active 
+||| mass-energy density in the State Vector. 
+public export
+deformSubstrate : Substrate -> Vexel -> Substrate
+deformSubstrate substrate stateVector =
+  fromList (deformSubstrateList (multisetToList substrate) (multisetToList stateVector))
+
+
+||| List-based step of the universe generation.
+public export
+stepUniverseList : Integer
+                 -> Metric
+                 -> List ((Geometry, Geometry), Integer)
+                 -> List ((Geometry, Amplitude), Integer)
+                 -> (List ((Geometry, Geometry), Integer), List ((Geometry, Amplitude), Integer))
+stepUniverseList capacityLimit metric subList stateList =
+  let evolvedStates = map (\((geom, amp), stateCount) => 
+                            let localPropagator = generateLocalSpreadPolyList metric subList geom
+                                fusedAmplitude  = scaleMultiset stateCount (mulIntPoly amp localPropagator)
+                            in ((geom, fusedAmplitude), stateCount))
+                          stateList
+      
+      processedItems = concatMap (\((geom, amp), stateCount) =>
+                                   let (latentSpace, visibleSpace) = partitionLogic 128 geom amp
+                                       stabilizedVisible = evaluateResonance capacityLimit 13 geom visibleSpace
+                                   in multisetToList (addMultiset latentSpace stabilizedVisible))
+                                 evolvedStates
+                                  
+      nextFieldList = processedItems
+      deformedSubList = deformSubstrateList subList evolvedStates
+  in (deformedSubList, nextFieldList)
 
 
 ||| Drives a complete generational evolution step where time-propagation is 
 ||| entirely localized and driven by the restored SpreadPolynumber bridge.
-|||
-||| The causal Substrate graph co-evolves dynamically with the active 
-||| mass-energy in the state vector (deformSubstrate).
 public export
 stepUniverseLocalized : Integer
                      -> Metric
@@ -97,23 +119,5 @@ stepUniverseLocalized : Integer
                      -> Vexel
                      -> (Substrate, Vexel)
 stepUniverseLocalized capacityLimit metric currentSubstrate stateVector =
-  let -- 1. Evolve fields by generating an individualized SpreadPolynumber per pixel coordinate!
-      evolvedStates = map (\((geom, amp), stateCount) => 
-                            let localPropagator = generateLocalSpreadPoly metric currentSubstrate geom
-                                fusedAmplitude  = scaleMultiset stateCount (mulIntPoly amp localPropagator)
-                            in ((geom, fusedAmplitude), stateCount))
-                          (multisetToList stateVector)
-      
-      -- 2. Execute partition and resonance over the uniform coordinate pixels
-      processedItems = concatMap (\((geom, amp), stateCount) =>
-                                   let (latentSpace, visibleSpace) = partitionLogic 128 geom amp
-                                       stabilizedVisible = evaluateResonance capacityLimit 13 geom visibleSpace
-                                   in multisetToList (addMultiset latentSpace stabilizedVisible))
-                                 evolvedStates
-                                 
-      nextField = fromList processedItems
-      
-      -- 3. Dynamically co-evolve the Substrate graph with the active field energy (pre-resonance)
-      preResonanceField = fromList evolvedStates
-      deformedSub = deformSubstrate currentSubstrate preResonanceField
-  in (deformedSub, nextField)
+  let (nextSub, nextField) = stepUniverseList capacityLimit metric (multisetToList currentSubstrate) (multisetToList stateVector)
+  in (fromList nextSub, fromList nextField)
