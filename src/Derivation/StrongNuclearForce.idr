@@ -31,12 +31,12 @@ record MultisetDefect where
   ||| The amount of unmet fractional tension
   vacuumTension : Double
 
-||| Evaluates if a SparseMaxel (FibreBundle) contains an isolated quark (fractional defect).
+||| Evaluates if a Vexel (FibreBundle) contains an isolated quark (fractional defect).
 |||
 ||| A Dirac Hole exists when the ChargeGate (S_5) polynomial is present
 ||| in the state vector with asymmetric (unannihilated) coefficients.
 public export
-containsDiracHole : SparseMaxel -> Bool
+containsDiracHole : Vexel -> Bool
 containsDiracHole pip =
   let chargePolyS5 = spreadPoly 5
       -- Check if any entry's amplitude matches the S_5 polynomial structure
@@ -48,10 +48,10 @@ containsDiracHole pip =
 ||| Proves that the vacuum must annihilate (zip up) any topological defect
 ||| by injecting an inverse Multiset array.
 |||
-||| Operates on SparseMaxel directly — negates all amplitudes and merges
+||| Operates on Vexel directly — negates all amplitudes and merges
 ||| to restore structural zero.
 public export
-vacuumAnnihilation : SparseMaxel -> SparseMaxel
+vacuumAnnihilation : Vexel -> Vexel
 vacuumAnnihilation pip =
   if containsDiracHole pip then
     let inverseSupp = negateMultiset pip

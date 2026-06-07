@@ -185,3 +185,22 @@ selectGate n =
   in case last' candidates of
        Just g  => g
        Nothing => BackgroundGate
+
+||| Returns the effective coupling exponent (multiplicity) of a gate at scale k.
+public export
+runningCoupling : Nat -> FundamentalGate -> Nat
+runningCoupling k gate =
+  let n = cast {to=Integer} k + 1
+      d = cast {to=Integer} (degree gate)
+  in if d <= 1 then Z else go n d Z (k + 1)
+  where
+    go : Integer -> Integer -> Nat -> Nat -> Nat
+    go val base acc Z = acc
+    go val base acc (S fuel) =
+      if val == 0 then acc
+      else if val `mod` base == 0
+              then go (val `div` base) base (S acc) fuel
+              else acc
+
+
+

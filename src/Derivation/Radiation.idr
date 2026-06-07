@@ -9,12 +9,12 @@ import System.CosmicPartition
 
 %default total
 
-||| Collective Radiation represents a physical state vector (SparseMaxel)
+||| Collective Radiation represents a physical state vector (Vexel)
 ||| composed entirely of delocalized, null-quadrance excitations in the Red metric.
 public export
 record Radiation where
   constructor MkRadiation
-  stateVector : SparseMaxel
+  stateVector : Vexel
 
 ||| Checks if a specific Geometry (Pixel Integer) lies on the Minkowski null diagonal.
 public export
@@ -60,10 +60,10 @@ checkBaryogenesisTrigger r =
       limit   = darkEnergyStates -- = 128
   in density > limit
 
-||| Casts a generic SparseMaxel to a Radiation state if it satisfies
+||| Casts a generic Vexel to a Radiation state if it satisfies
 ||| the pure null-quadrance structural constraint.
 public export
-validateRadiation : SparseMaxel -> Maybe Radiation
+validateRadiation : Vexel -> Maybe Radiation
 validateRadiation sm =
   let r = MkRadiation sm
   in if isPureRadiation r then Just r else Nothing

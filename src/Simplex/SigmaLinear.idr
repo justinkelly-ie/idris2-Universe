@@ -17,19 +17,29 @@ Edge = (Simplex.Core.Geometry, Simplex.Core.Geometry)
 
 ||| The purely type-verified Vertex Multiset (replaces LCell0 logic)
 public export
-0 LDepSparseMaxel : (contents : List (Simplex.Core.Geometry, Integer)) -> Type
-LDepSparseMaxel contents = LDepMultiset Simplex.Core.Geometry contents
+0 LVexel : (contents : List (Simplex.Core.Geometry, Integer)) -> Type
+LVexel contents = LMultiset Simplex.Core.Geometry contents
+
+||| Legacy compatibility alias for LVexel.
+public export
+0 LDepVexel : (contents : List (Simplex.Core.Geometry, Integer)) -> Type
+LDepVexel = LVexel
 
 ||| The purely type-verified Edge Multiset (replaces runtime multiset edges)
 public export
+0 LSubstrate : (contents : List (Edge, Integer)) -> Type
+LSubstrate contents = LMultiset Edge contents
+
+||| Legacy compatibility alias for LSubstrate.
+public export
 0 LDepSubstrate : (contents : List (Edge, Integer)) -> Type
-LDepSubstrate contents = LDepMultiset Edge contents
+LDepSubstrate = LSubstrate
 
 -----------------------------------------------------------------------
 -- PHASE 2: MATHEMATICAL SPECIFICATIONS (The Formal Layer)
 -----------------------------------------------------------------------
 
-||| Computes the multiset coordinate reduction of a Substrate boundary to a SparseMaxel boundary.
+||| Computes the multiset coordinate reduction of a Substrate boundary to a Vexel boundary.
 ||| A directed edge (src, tgt) with count c adds `c` to tgt and subtracts `c` from src.
 public export
 computeBoundaryIndex : List (Edge, Integer) -> List (Simplex.Core.Geometry, Integer)
@@ -55,7 +65,7 @@ nextContents ((item, count) :: xs) = (item, count + 1) :: nextContents xs
 public export
 applyBoundary : {0 edges : List (Edge, Integer)} -> 
                 (1 chain : LDepSubstrate edges) -> 
-                LDepSparseMaxel (computeBoundaryIndex edges)
+                LDepVexel (computeBoundaryIndex edges)
 applyBoundary LEmptyM = LEmptyM
 applyBoundary (LAddM (src, tgt) count prev) =
   LAddM tgt count (LAddM src (-count) (applyBoundary prev))
@@ -65,8 +75,8 @@ applyBoundary (LAddM (src, tgt) count prev) =
 ||| the `nextContents` specification.
 public export
 stepUniverse : {0 contents : List (a, Integer)} -> 
-               (1 currentMesh : LDepMultiset a contents) -> 
-               LDepMultiset a (nextContents contents)
+               (1 currentMesh : LMultiset a contents) -> 
+               LMultiset a (nextContents contents)
 stepUniverse LEmptyM = LEmptyM
 stepUniverse (LAddM item count prev) = LAddM item (count + 1) (stepUniverse prev)
 
@@ -78,8 +88,8 @@ stepUniverse (LAddM item count prev) = LAddM item (count + 1) (stepUniverse prev
 ||| Wraps the linear structure in a Dependent Pair (DPair) so the compiler 
 ||| doesn't explode when the universe expands, while still formally proving execution.
 public export
-0 DynamicSparseMaxel : Type
-DynamicSparseMaxel = (c : List (Simplex.Core.Geometry, Integer) ** LDepSparseMaxel c)
+0 DynamicVexel : Type
+DynamicVexel = (c : List (Simplex.Core.Geometry, Integer) ** LDepVexel c)
 
 ||| The Dynamic Edge Substrate.
 public export
@@ -90,13 +100,13 @@ DynamicSubstrate = (edges : List (Edge, Integer) ** LDepSubstrate edges)
 ||| Unpacks the DPair, applies the causal boundary math to the type index, 
 ||| executes the linear physics in-place, and repacks it.
 public export
-runBoundary : DynamicSubstrate -> DynamicSparseMaxel
+runBoundary : DynamicSubstrate -> DynamicVexel
 runBoundary (edges ** chain) = (computeBoundaryIndex edges ** applyBoundary chain)
 
 ||| The Dynamic Universe Wrapper.
 public export
 0 DynamicUniverse : (a : Type) -> Type
-DynamicUniverse a = (c : List (a, Integer) ** LDepMultiset a c)
+DynamicUniverse a = (c : List (a, Integer) ** LMultiset a c)
 
 ||| The Macroscopic Runtime Epoch.
 public export

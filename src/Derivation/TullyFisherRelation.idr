@@ -32,13 +32,13 @@ interface ExhibitsGalacticRotation a where
   ||| Returns a tuple: (Velocity Squared (Quadrance), Visible Mass Equivalent)
   calculateRotationMetrics : a -> (Quadrance, Fraction)
 
-||| Galactic rotation for a SparseMaxel (FibreBundle).
+||| Galactic rotation for a Vexel (FibreBundle).
 |||
 ||| Visible Mass is proportional to the total state vector occupancy.
 ||| Velocity Squared is structurally proportional to the polynomial spread
 ||| minus the baseline vacuum friction (the Dark Matter ratio).
 public export
-ExhibitsGalacticRotation SparseMaxel where
+ExhibitsGalacticRotation Vexel where
   calculateRotationMetrics pip =
     let visibleMass = cast {to = Nat} (stateLag pip)
         velocitySq = MkFraction (visibleMass * primordialGridStates) darkMatterStates

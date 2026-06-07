@@ -27,7 +27,7 @@ mergeGraph = mergeSubstrate
 ||| Advances the system state by performing a raw Substrate merge.
 |||
 ||| The relational clock is driven by the **state vector's own structural
-||| density** — how much complexity the SparseMaxel currently carries.
+||| density** — how much complexity the Vexel currently carries.
 ||| This is the key insight: time is not an external parameter or a substrate
 ||| edge count. It is the internal lag of the state itself.
 |||

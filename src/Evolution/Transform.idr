@@ -101,7 +101,7 @@ ascendScale macroGeom items_mset =
 ||| Validates if a local space-time region matches the exact 137 Primorial threshold to level up.
 ||| Driven by your clean list-comprehension triad extractor and GCD-bounded rational twist engine.
 public export
-canAscend : Metric -> Substrate -> SparseMaxel -> Bool
+canAscend : Metric -> Substrate -> Vexel -> Bool
 canAscend metric substrate stateSpace =
   let -- 1. Current State Output: Total active particle energy density in the State Space
       currentOutput = stateLag stateSpace

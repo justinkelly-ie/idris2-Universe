@@ -27,11 +27,11 @@ import Math.SpreadPolynumber
 ||| Creates a spontaneous Matter/Antimatter pair out of the empty grid
 ||| using the intense gradient of the S_13 Resonance Gate.
 |||
-||| Operates directly on the SparseMaxel (FibreBundle = Multiset (Geometry, Amplitude)).
+||| Operates directly on the Vexel (FibreBundle = Multiset (Geometry, Amplitude)).
 ||| By injecting +1 and -1 multiplicities at a target coordinate, we model
 ||| the vacuum being ripped into a pair.
 public export
-simulateSchwingerEffect : SparseMaxel -> Geometry -> SparseMaxel
+simulateSchwingerEffect : Vexel -> Geometry -> Vexel
 simulateSchwingerEffect pip targetCoord =
   let -- Inject a particle (+1) and antiparticle (-1) at the target
       particlePoly     = fromList [((1, 0), 1)]  -- monomial s^1
@@ -47,7 +47,7 @@ simulateSchwingerEffect pip targetCoord =
 ||| Structurally, the grid fracture swallows the negative coefficient,
 ||| leaving the positive particle stranded on the visible grid.
 public export
-simulateHawkingRadiation : SparseMaxel -> Geometry -> SparseMaxel
+simulateHawkingRadiation : Vexel -> Geometry -> Vexel
 simulateHawkingRadiation pip targetCoord =
   let hawkingPoly = fromList [((1, 0), 1)]
       hawkingEmission = fromList [ ((targetCoord, hawkingPoly), 1) ]

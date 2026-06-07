@@ -33,12 +33,12 @@ interface ExperiencesTimeDilation a where
   ||| Returns the "Z-depth" or computational depth factor.
   calculateLeibnizLag : a -> Fraction
 
-||| Time Dilation for a FibreBundle (SparseMaxel = Multiset (Geometry, Amplitude)).
+||| Time Dilation for a FibreBundle (Vexel = Multiset (Geometry, Amplitude)).
 |||
 ||| The Leibniz Lag is derived from the total multiplicity (occupancy) of the
 ||| state vector. Higher occupancy = more internal complexity = slower clock.
 public export
-ExperiencesTimeDilation SparseMaxel where
+ExperiencesTimeDilation Vexel where
   calculateLeibnizLag pip =
     let totalOccupancy = cast {to = Nat} (stateLag pip)
     in MkFraction totalOccupancy primordialGridStates
@@ -47,7 +47,7 @@ ExperiencesTimeDilation SparseMaxel where
 |||
 ||| The Leibniz Lag is the sum of:
 |||   - Substrate causal density (how many directed edges in the DAG)
-|||   - State vector occupancy (total multiplicity of the SparseMaxel)
+|||   - State vector occupancy (total multiplicity of the Vexel)
 |||
 ||| The substrate density drives the relational clock — denser causal graphs
 ||| have more edges to traverse per tick, causing the local clock to run slower.

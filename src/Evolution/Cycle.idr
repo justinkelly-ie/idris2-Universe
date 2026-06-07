@@ -20,7 +20,7 @@ import Math.Chromogeometry
 import System.CosmicPartition
 import Scale.ScaleTrajectory
 import Simplex.SigmaLinear
-import SigmaBridge
+import SigmaGate
 
 %default covering
 
@@ -56,14 +56,14 @@ capacityLimit = cast (calculateGridLimit constructPrimorialGrid)
 ||| Melts the substrate, shreds the edges to vertices, and ensures the net boundary
 ||| charge perfectly balances the state vector's mass density.
 public export
-sigmaGateAudit : Substrate -> SparseMaxel -> Bool
+sigmaGateAudit : Substrate -> Vexel -> Bool
 sigmaGateAudit sub field =
   let -- 1. Melt the raw causal substrate poset into a linear LDepSubstrate
       dynamicChain = sigmaMeltChain sub
       -- 2. Execute the linear boundary operator to shred edges to vertices
       dynamicBoundary = runBoundary dynamicChain
       -- 3. Freeze back to verify boundary parity
-      frozenBoundary = sigmaFreezeGeometryMaxel dynamicBoundary
+      frozenBoundary = sigmaFreezeGeometryVexel dynamicBoundary
       -- 4. Audit that the net boundary flow is conserved
       netBoundaryFlow = multiplicityAll frozenBoundary
   in netBoundaryFlow == 0 -- Proves the universe is a closed, conserved manifold

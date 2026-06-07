@@ -3,6 +3,7 @@ module Simplex.Twist
 import Math.Multiset
 import Math.Chromogeometry
 import Simplex.Core
+import Data.List
 
 
 ||| Computes the Greatest Common Divisor to safely reduce integers.
@@ -65,3 +66,164 @@ computeTwist metric substrate =
       totalTwist = if finalDen == 0 then 0 else finalNum `div` finalDen
       
   in fromInteger (abs totalTwist `mod` 137) -- Normalized perfectly to stay within the Primorial limits
+
+||| A helper to check if there is an undirected connection between two vertices in the substrate.
+public export
+connected : List (Geometry, Geometry) -> Geometry -> Geometry -> Bool
+connected es u v = elem (u, v) es || elem (v, u) es
+
+||| Calculates the sum of quadrances of a 4-cycle loop to measure its size.
+public export
+loopSize : (Geometry, Geometry, Geometry, Geometry) -> Integer
+loopSize (u1, u2, u3, u4) =
+  quadranceNL Blue u1 u2 + quadranceNL Blue u2 u3 + quadranceNL Blue u3 u4 + quadranceNL Blue u4 u1
+
+||| A helper to find the smallest loop in a list of loops.
+public export
+findSmallestLoop : List (Geometry, Geometry, Geometry, Geometry) -> Maybe (Geometry, Geometry, Geometry, Geometry)
+findSmallestLoop [] = Nothing
+findSmallestLoop (x :: xs) = Just (go x (loopSize x) xs)
+  where
+    go : (Geometry, Geometry, Geometry, Geometry) -> Integer -> List (Geometry, Geometry, Geometry, Geometry) -> (Geometry, Geometry, Geometry, Geometry)
+    go best bestSz [] = best
+    go best bestSz (y :: ys) =
+      let ySz = loopSize y
+      in if ySz < bestSz
+            then go y ySz ys
+            else go best bestSz ys
+
+||| Subtracts two rational fractions precisely by negating the second numerator.
+public export
+subRationalLocal : (Integer, Integer) -> (Integer, Integer) -> (Integer, Integer)
+subRationalLocal (n1, d1) (n2, d2) = addRationalLocal (n1, d1) (-n2, d2)
+
+||| For a pixel p, find the smallest closed loop containing p and return the rational spread deficit
+||| as a (numerator, denominator) pair.
+public export
+plaquetteDefect : Substrate -> Geometry -> (Integer, Integer)
+plaquetteDefect sub p1 =
+  let es = map fst (multisetToList sub)
+      nodes = substrateNodes sub
+      -- Find all 4-cycle loops containing p1
+      loops = [ (p1, p2, p3, p4)
+              | p2 <- nodes
+              , p3 <- nodes
+              , p4 <- nodes
+              -- All vertices must be pairwise distinct
+              , p2 /= p1 && p3 /= p1 && p4 /= p1 && p2 /= p3 && p3 /= p4 && p2 /= p4
+              , connected es p1 p2
+              , connected es p2 p3
+              , connected es p3 p4
+              , connected es p4 p1
+              ]
+  in case findSmallestLoop loops of
+       Nothing => (0, 1) -- Flat space if no cycle is found
+       Just (p1', p2', p3', p4') =>
+         -- Calculate the spread at each of the four vertices
+         let s1 = spreadNL Blue p1' p4' p2'
+             s2 = spreadNL Blue p2' p1' p3'
+             s3 = spreadNL Blue p3' p2' p4'
+             s4 = spreadNL Blue p4' p3' p1'
+             -- Sum the rational spreads
+             sumS = foldl addRationalLocal (0, 1) [s1, s2, s3, s4]
+             -- Deficit is Flat (4/1) - sum
+         in subRationalLocal (4, 1) sumS
+
+||| Computes the positive integer cost associated with a node based on the magnitude of its plaquette defect.
+public export
+nodeCost : Substrate -> Geometry -> Integer
+nodeCost sub x =
+  let (num, den) = plaquetteDefect sub x
+  in abs num
+
+||| Internal Dijkstra search function using fuel for totality.
+dijkstra : Substrate -> List (Geometry, Geometry) -> Geometry -> List Geometry -> List (List Geometry, Integer) -> Nat -> Maybe (List Geometry)
+dijkstra sub es end visited [] fuel = Nothing
+dijkstra sub es end visited ((path, cost) :: rest) Z = Nothing
+dijkstra sub es end visited ((path, cost) :: rest) (S k) =
+  case path of
+    [] => dijkstra sub es end visited rest (S k)
+    (curr :: _) =>
+      if curr == end
+         then Just (reverse path)
+         else if elem curr visited
+                 then dijkstra sub es end visited rest (S k)
+                 else
+                   let nbrs = filter (\nbr => connected es curr nbr && not (elem nbr visited)) (substrateNodes sub)
+                       newPaths = map (\nbr =>
+                                         let edgeCost = 1 + nodeCost sub curr + nodeCost sub nbr
+                                         in (nbr :: path, cost + edgeCost)
+                                      ) nbrs
+                       insertSorted : (List Geometry, Integer) -> List (List Geometry, Integer) -> List (List Geometry, Integer)
+                       insertSorted x [] = [x]
+                       insertSorted x (y :: ys) =
+                         if snd x <= snd y
+                            then x :: y :: ys
+                            else y :: insertSorted x ys
+                       
+                       updatedQueue = foldl (\q, p => insertSorted p q) rest newPaths
+                   in dijkstra sub es end (curr :: visited) updatedQueue k
+
+||| Finds the shortest path in the Substrate causal graph from start to end
+||| using Dijkstra's algorithm. The path minimizes the cumulative edge weight,
+||| where the weight of edge (u, v) is 1 + nodeCost(u) + nodeCost(v).
+public export
+discreteGeodesic : Substrate -> Geometry -> Geometry -> Maybe (List Geometry)
+discreteGeodesic sub start end =
+  let es = map fst (multisetToList sub)
+      nodes = substrateNodes sub
+      fuel = length nodes + 1
+  in dijkstra sub es end [] [([start], 0)] fuel
+
+||| Computes the discrete Ricci curvature along a directed edge (u, v) in the substrate.
+||| This is defined as the sum of rational plaquette defects of all 4-cycle loops sharing the edge.
+public export
+ricciCurvatureEdge : Substrate -> (Geometry, Geometry) -> (Integer, Integer)
+ricciCurvatureEdge sub (u, v) =
+  let es = map fst (multisetToList sub)
+      nodes = substrateNodes sub
+      
+      -- Find all unique 4-cycle loops containing both u and v
+      loops = [ (p1, p2, p3, p4)
+              | p1 <- nodes, p2 <- nodes, p3 <- nodes, p4 <- nodes
+              -- u and v must be two adjacent vertices in the loop
+              , (p1 == u && p2 == v) || (p2 == u && p3 == v) || (p3 == u && p4 == v) || (p4 == u && p1 == v)
+              -- All vertices must be pairwise distinct
+              , p1 /= p2 && p2 /= p3 && p3 /= p4 && p4 /= p1 && p1 /= p3 && p2 /= p4
+              , connected es p1 p2
+              , connected es p2 p3
+              , connected es p3 p4
+              , connected es p4 p1
+              ]
+              
+      -- Calculate the defect for each loop
+      loopDefect : (Geometry, Geometry, Geometry, Geometry) -> (Integer, Integer)
+      loopDefect (p1', p2', p3', p4') =
+        let s1 = spreadNL Blue p1' p4' p2'
+            s2 = spreadNL Blue p2' p1' p3'
+            s3 = spreadNL Blue p3' p2' p4'
+            s4 = spreadNL Blue p4' p3' p1'
+            sumS = foldl addRationalLocal (0, 1) [s1, s2, s3, s4]
+        in subRationalLocal (4, 1) sumS
+        
+      defects = map loopDefect loops
+  in foldl addRationalLocal (0, 1) defects
+
+||| Performs a discrete Ricci curvature transformation on the substrate.
+||| Evolves the edge weights proportionally to their discrete Ricci curvature,
+||| inverting the curvature defect to contract dense areas (analogous to Ricci flow).
+public export
+ricciTransformation : Substrate -> Substrate
+ricciTransformation sub =
+  let edges = multisetToList sub
+      updatedEdges = map (\((u, v), count) =>
+                            let (num, den) = ricciCurvatureEdge sub (u, v)
+                                rVal = if den == 0 then 0 else num `div` den
+                                -- Ricci flow-like metric contraction
+                                newCount = count - rVal
+                                -- Keep weights positive
+                                finalCount = if newCount < 1 then 1 else newCount
+                            in ((u, v), finalCount)
+                         ) edges
+  in fromList updatedEdges
+

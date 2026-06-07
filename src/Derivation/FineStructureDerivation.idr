@@ -49,9 +49,9 @@ deriveRunningAlpha state =
 ||| Validates that the Fine Structure limit asymptotically approaches 1/137 
 ||| for empty, primordial vacuum space.
 |||
-||| For a SparseMaxel (FibreBundle), an empty multiset should yield alpha = 1/210.
+||| For a Vexel (FibreBundle), an empty multiset should yield alpha = 1/210.
 public export
-verifyPrimordialAlpha : SparseMaxel -> Bool
+verifyPrimordialAlpha : Vexel -> Bool
 verifyPrimordialAlpha pip =
   let alpha = deriveRunningAlpha pip
       -- For empty space, Alpha should exactly equal 1 / 210

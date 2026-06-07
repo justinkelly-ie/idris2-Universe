@@ -44,12 +44,12 @@ interface ExertsExpansivePressure a where
   ||| the higher the expansive coefficient.
   calculateExpansivePressure : a -> Spread
 
-||| Expansive pressure for a SparseMaxel (FibreBundle).
+||| Expansive pressure for a Vexel (FibreBundle).
 ||| The pressure is proportional to the state vector occupancy scaled by the
 ||| primorial grid limit — more polynomial terms = more fractional overflow
 ||| = more expansion.
 public export
-ExertsExpansivePressure SparseMaxel where
+ExertsExpansivePressure Vexel where
   calculateExpansivePressure pip =
     let occupancy = cast {to = Nat} (stateLag pip)
     in MkSpread (MkFraction (occupancy * darkEnergyStates) (primordialGridStates * primordialGridStates))
@@ -62,18 +62,18 @@ ExertsExpansivePressure UniverseState where
         causalDepth = substrateLag (substrate state)
     in MkSpread (MkFraction ((occupancy + causalDepth) * darkEnergyStates) (primordialGridStates * primordialGridStates))
 
-||| Maps a spatial dilation function over the Geometry coordinates of a SparseMaxel.
+||| Maps a spatial dilation function over the Geometry coordinates of a Vexel.
 ||| Because Multiset is an O(N) array, we can stretch the entire universe
 ||| geometry without triggering combinatorial evaluation trees.
 public export
-dilateSpace : (Integer -> Integer) -> SparseMaxel -> SparseMaxel
+dilateSpace : (Integer -> Integer) -> Vexel -> Vexel
 dilateSpace f pip =
   fromList (map (\((MkPixel s t, amp), count) => ((MkPixel (f s) (f t), amp), count)) (multisetToList pip))
 
 ||| Applies the physical outward pressure to the underlying FibreBundle,
 ||| physically moving the coordinates apart (simulating Cosmic Expansion).
 public export
-applyDarkEnergyExpansion : SparseMaxel -> Spread -> SparseMaxel
+applyDarkEnergyExpansion : Vexel -> Spread -> Vexel
 applyDarkEnergyExpansion pip pressure =
   let scale = fractionDivNat pressure.value.numerator (pressure.value.denominator * primordialGridStates) + 1
   in dilateSpace (\x => x * (cast {to=Integer} scale)) pip

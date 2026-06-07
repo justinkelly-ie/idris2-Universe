@@ -32,11 +32,11 @@ interface CalculatesVacuumEnergy a where
   predictCosmologicalConstant : a -> Fraction
 
 ||| The vacuum energy is bounded by the 210-state partition grid.
-||| For a raw FibreBundle (SparseMaxel), the state vector occupancy modulates
+||| For a raw FibreBundle (Vexel), the state vector occupancy modulates
 ||| the effective vacuum density — more occupied states reduce the available
 ||| vacuum capacity.
 public export
-CalculatesVacuumEnergy SparseMaxel where
+CalculatesVacuumEnergy Vexel where
   predictCosmologicalConstant pip =
     let darkEnergyCount : Nat = darkEnergyStates
         gridLimit       : Nat = primordialGridStates

@@ -2,13 +2,11 @@ module System.CosmicPartition
 
 import Evolution.Gate
 import Evolution.State
-
-import Evolution.State
-
-import Evolution.Gate
 import Math.Fraction
 import Math.Multiset
 import Math.Polynumber
+import Math.IntPolynumber
+import Math.SpreadPolynumber
 
 %default total
 
@@ -105,5 +103,43 @@ darkMatterStates = partitionSize (MkGeometry 1 (Foldable 55)) constructPrimorial
 public export
 visibleMatterStates : Nat
 visibleMatterStates = partitionSize (MkGeometry 3 Rigid) constructPrimorialGrid.visibleMatter
+
+
+-----------------------------------------------------------------------
+-- THERMODYNAMIC FUNCTIONS
+-----------------------------------------------------------------------
+
+private
+sumPoolPoly : Multiset (Pixel Integer, IntPolynumber) -> IntPolynumber
+sumPoolPoly ZeroM = emptyIntPoly
+sumPoolPoly (AddM (geom, poly) count rest) =
+  let scaledPoly = scaleMultiset count poly
+      restPoly = sumPoolPoly rest
+  in addIntPoly scaledPoly restPoly
+
+||| Aggregates the entire active state space of the universe into a single partition polynomial.
+public export
+systemPartitionPoly : CosmicPartition -> IntPolynumber
+systemPartitionPoly partition =
+  let visPoly = sumPoolPoly partition.visibleMatter
+      dePoly  = sumPoolPoly partition.darkEnergy
+      dmPoly  = sumPoolPoly partition.darkMatter
+  in addIntPoly visPoly (addIntPoly dePoly dmPoly)
+
+private covering
+log2Ceil : Integer -> Integer
+log2Ceil val =
+  if val <= 1 then 0
+  else 1 + log2Ceil (divUp val)
+  where
+    divUp : Integer -> Integer
+    divUp n = (n + 1) `div` 2
+
+||| Computes the system entropy as the integer bit-register size of the partition lag.
+public export covering
+systemEntropy : CosmicPartition -> Integer
+systemEntropy partition =
+  let t = multiplicityAll (systemPartitionPoly partition)
+  in log2Ceil t
 
 

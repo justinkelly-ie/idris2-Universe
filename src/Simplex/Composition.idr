@@ -16,7 +16,7 @@ import public Data.List
 ||| a spatial state vector (0-Cochain) mapping coordinates to amplitudes.
 public export
 0 CompositeState : Type
-CompositeState = SparseMaxel
+CompositeState = Vexel
 
 ||| Translates a CompositeState's coordinates by a displacement vector.
 public export

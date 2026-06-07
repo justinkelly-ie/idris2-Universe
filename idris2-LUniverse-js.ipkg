@@ -1,0 +1,10 @@
+package idris2-LUniverse-js
+version = 0.1.0
+authors = "Justin"
+
+depends = base, contrib, idris2-chromogeometry, idris2-Multiset, linear, idris2-QuickCheck
+
+sourcedir = "src"
+
+main = JSBridge
+executable = luniverse_js

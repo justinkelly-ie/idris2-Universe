@@ -5,6 +5,10 @@ import Math.IntPolynumber
 import Math.SpreadPolynumber
 import Math.Multiset
 import Data.List
+import Simplex.Core
+import Simplex.SigmaLinear
+import Evolution.Cycle
+import System.CosmicPartition
 
 %default total
 
@@ -64,5 +68,102 @@ public export
 leibnizIntegralLag : Nat -> Nat
 leibnizIntegralLag Z = 0
 leibnizIntegralLag (S k) = 
-  -- Simple placeholder model: Each successive coordinate bounds more lag.
   (S k) + leibnizIntegralLag k
+
+||| Grounded Leibniz Integration over the causal substrate network.
+||| Sums the amplitude-weighted edge multiplicities across all directed links
+||| in the substrate to measure total accumulated coordinate tension.
+public export
+substrateIntegral : Substrate -> Vexel -> Integer
+substrateIntegral substrate field =
+  let edges  = multisetToList substrate
+      states = multisetToList field
+      
+      getEnergy : Simplex.Core.Geometry -> Integer
+      getEnergy geom =
+        case filter (\((g, _), _) => g == geom) states of
+          (((_, amp), _) :: _) => multiplicityAll amp
+          []                   => 0
+          
+      edgeContribution : ((Simplex.Core.Geometry, Simplex.Core.Geometry), Integer) -> Integer
+      edgeContribution ((src, tgt), count) =
+        let energySrc = getEnergy src
+            energyTgt = getEnergy tgt
+        in count * (energySrc + energyTgt)
+  in sum (map edgeContribution edges)
+
+||| Computes the discrete flux integral of a 1-cochain (edge field) over the substrate.
+||| Sums the signed multiplicity weights of all edges, representing the net flow.
+public export
+discreteFluxIntegral : Substrate -> Integer
+discreteFluxIntegral sub =
+  sum (map snd (multisetToList sub))
+
+||| Computes the discrete antiderivative (integration by summation) for a sequence
+||| of difference polynomials. Given a list of derivatives [df_0, df_1, ...],
+||| returns the accumulated sequence [F_0, F_1, F_2, ...] where F_{k+1} - F_k = df_k.
+public export
+wildbergerAntiderivative : List IntPolynumber -> List IntPolynumber
+wildbergerAntiderivative dfs =
+  go ZeroM dfs
+  where
+    go : IntPolynumber -> List IntPolynumber -> List IntPolynumber
+    go acc [] = [acc]
+    go acc (df :: rest) =
+      acc :: go (addIntPoly acc df) rest
+
+||| A discrete path integral summing over all valid transition histories (Feynman analogue).
+||| Runs N epochs, accumulating all intermediate field states as a superposed Multiset path sum.
+public export
+pathEnsemble : Nat -> UniverseState -> Vexel
+pathEnsemble Z state = stateVector state
+pathEnsemble (S k) state =
+  let capLimit = cast (calculateGridLimit constructPrimorialGrid)
+      cycled = runAdaptiveCycle capLimit Blue (MkPixel 0 0) state
+  in addMultiset (stateVector state) (pathEnsemble k cycled)
+
+-----------------------------------------------------------------------
+-- 4. DISCRETE EXTERIOR CALCULUS & LAPLACIAN
+-----------------------------------------------------------------------
+
+||| Wildberger's Signed Incidence / Coboundary Operator (Node-to-Edge gradient).
+||| Projects a 0-cochain (Vexel vertex field) to a 1-cochain (Substrate edges)
+||| by calculating exact integer difference across directed pixel links.
+public export
+applyCoboundary : Vexel -> Substrate -> Substrate
+applyCoboundary stateVector substrate =
+  let edges  = multisetToList substrate
+      states = multisetToList stateVector
+      
+      getEnergy : Pixel Integer -> Integer
+      getEnergy geom =
+        case filter (\((g, _), _) => g == geom) states of
+          ((_, c) :: _) => c
+          []            => 0
+          
+      coboundaryEdges = map (\((src, tgt), count) =>
+                              let energySrc = getEnergy src
+                                  energyTgt = getEnergy tgt
+                                  diff = energyTgt - energySrc
+                              -- Wildberger's transpose mapping: preserves edge connectivity
+                              -- but sets multiplicity to the node potential difference
+                              in ((src, tgt), diff)
+                            ) edges
+  in fromList coboundaryEdges
+
+||| The discrete boundary operator ∂₁ mapping 1-chains (Substrate) to 0-chains (Vexel).
+public export
+boundaryOp : Substrate -> Vexel
+boundaryOp sub =
+  let edges = multisetToList sub
+      boundaryList = computeBoundaryIndex edges
+      states = map (\(geom, count) => ((geom, emptyIntPoly), count)) boundaryList
+  in fromList states
+
+||| The Discrete Laplacian operator Δ = ∂ ∘ δ on Pixel space.
+||| Evaluates the divergence of the gradient entirely using whole-number arithmetic.
+public export
+discreteLaplacian : Vexel -> Substrate -> Vexel
+discreteLaplacian field substrate =
+  let gradient = applyCoboundary field substrate
+  in boundaryOp gradient

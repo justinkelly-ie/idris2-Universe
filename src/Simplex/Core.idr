@@ -70,8 +70,8 @@ Substrate = Multiset (Geometry, Geometry)
 ||| The state vector (energy/mass field coefficients).
 ||| A state is literally a multiset of pixel-amplitude pairs.
 public export
-0 SparseMaxel : Type
-SparseMaxel = Multiset (Geometry, Amplitude)
+0 Vexel : Type
+Vexel = Multiset (Geometry, Amplitude)
 
 -----------------------------------------------------------------------
 -- 5. UNIVERSE STATE (The Total Cosmological Configuration)
@@ -86,7 +86,7 @@ record UniverseState where
   ||| The directed causal relations (spacetime / poset / substrate).
   substrate    : Substrate
   ||| The quantum amplitude assignments (matter fields / state vector).
-  stateVector  : SparseMaxel
+  stateVector  : Vexel
 
 -----------------------------------------------------------------------
 -- 6. SUBSTRATE UTILITIES
@@ -122,44 +122,44 @@ substrateNodes sub =
   nub (concatMap (\((g1, g2), _) => [g1, g2]) (multisetToList sub))
 
 -----------------------------------------------------------------------
--- 7. SparseMaxel UTILITIES
+-- 7. Vexel UTILITIES
 -----------------------------------------------------------------------
 
-||| The empty SparseMaxel — the physical vacuum state.
+||| The empty Vexel — the physical vacuum state.
 public export
-emptySparseMaxel : SparseMaxel
-emptySparseMaxel = ZeroM
+emptyVexel : Vexel
+emptyVexel = ZeroM
 
-||| A singleton SparseMaxel — a single coordinate mapped to one amplitude.
+||| A singleton Vexel — a single coordinate mapped to one amplitude.
 ||| This is the result of ascendScale: the entire micro-graph collapses to one entry.
 |||
 public export
-singletonSparseMaxel : Geometry -> Amplitude -> SparseMaxel
-singletonSparseMaxel geom amp = fromList [((geom, amp), 1)]
+singletonVexel : Geometry -> Amplitude -> Vexel
+singletonVexel geom amp = fromList [((geom, amp), 1)]
 
 ||| Superposition — the native multiset union of two state vectors.
 |||
 public export
-superposeStates : SparseMaxel -> SparseMaxel -> SparseMaxel
+superposeStates : Vexel -> Vexel -> Vexel
 superposeStates = addMultiset
 
-||| The total Leibniz Lag of a SparseMaxel (sum of all entry multiplicities).
+||| The total Leibniz Lag of a Vexel (sum of all entry multiplicities).
 |||
 public export
-stateLag : SparseMaxel -> Integer
+stateLag : Vexel -> Integer
 stateLag m = multiplicityAll m
 
-||| Restriction of a SparseMaxel to entries matching a specific Geometry.
+||| Restriction of a Vexel to entries matching a specific Geometry.
 |||
 ||| This is the coordinate filter: pulling back entries from the global state vector
 ||| to a specific coordinate pixel key. In multiset terms: filter by coordinate.
 |||
 public export
-restrictToPixel : Geometry -> SparseMaxel -> SparseMaxel
+restrictToPixel : Geometry -> Vexel -> Vexel
 restrictToPixel geom pip =
   fromList (filter (\((g, _), _) => g == geom) (multisetToList pip))
 
-||| Checks that every Geometry referenced in the SparseMaxel exists as a node
+||| Checks that every Geometry referenced in the Vexel exists as a node
 ||| in the Substrate causal graph.
 |||
 ||| A synchronised state guarantees the state vector does not reference a
@@ -167,7 +167,7 @@ restrictToPixel geom pip =
 ||| indicates a causal boundary violation — undefined physics.
 |||
 public export
-isSynchronised : Substrate -> SparseMaxel -> Bool
+isSynchronised : Substrate -> Vexel -> Bool
 isSynchronised sub pip =
   let subNodes = substrateNodes sub
       pipCoords = map (fst . fst) (multisetToList pip)
@@ -202,7 +202,7 @@ serializeAmplitude : Amplitude -> String
 serializeAmplitude amp =
   "[" ++ join "," (map serializeTerm (multisetToList amp)) ++ "]"
 
-||| Serializes a SparseMaxel state vector element to JSON.
+||| Serializes a Vexel state vector element to JSON.
 public export
 serializeMaxelItem : ((Geometry, Amplitude), Integer) -> String
 serializeMaxelItem ((geom, amp), count) =
@@ -210,10 +210,10 @@ serializeMaxelItem ((geom, amp), count) =
   ",\"amplitude\":" ++ serializeAmplitude amp ++
   ",\"count\":" ++ show count ++ "}"
 
-||| Serializes a SparseMaxel state vector to JSON.
+||| Serializes a Vexel state vector to JSON.
 public export
-serializeSparseMaxel : SparseMaxel -> String
-serializeSparseMaxel maxel =
+serializeVexel : Vexel -> String
+serializeVexel maxel =
   "[" ++ join "," (map serializeMaxelItem (multisetToList maxel)) ++ "]"
 
 ||| Serializes a Substrate causal edge to JSON.
@@ -235,6 +235,6 @@ public export
 serializeUniverseState : UniverseState -> String
 serializeUniverseState (MkUniverseState sub stateVec) =
   "{\"substrate\":" ++ serializeSubstrate sub ++
-  ",\"stateVector\":" ++ serializeSparseMaxel stateVec ++ "}"
+  ",\"stateVector\":" ++ serializeVexel stateVec ++ "}"
 
 

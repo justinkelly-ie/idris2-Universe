@@ -64,7 +64,7 @@ generateLocalSpreadPoly metric substrate currentGeom =
 ||| connecting high-energy coordinates are structurally reinforced (their 
 ||| multiplicities increase), letting the universe speak for itself.
 public export
-deformSubstrate : Substrate -> SparseMaxel -> Substrate
+deformSubstrate : Substrate -> Vexel -> Substrate
 deformSubstrate substrate stateVector =
   let edges  = multisetToList substrate
       states = multisetToList stateVector
@@ -94,8 +94,8 @@ public export
 stepUniverseLocalized : Integer
                      -> Metric
                      -> Substrate
-                     -> SparseMaxel
-                     -> (Substrate, SparseMaxel)
+                     -> Vexel
+                     -> (Substrate, Vexel)
 stepUniverseLocalized capacityLimit metric currentSubstrate stateVector =
   let -- 1. Evolve fields by generating an individualized SpreadPolynumber per pixel coordinate!
       evolvedStates = map (\((geom, amp), stateCount) => 

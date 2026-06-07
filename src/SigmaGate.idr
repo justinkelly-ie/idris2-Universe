@@ -1,25 +1,25 @@
-module SigmaBridge
+module SigmaGate
 
 import Simplex.Core
 import Simplex.SigmaLinear
 import Math.Multiset
 
 -----------------------------------------------------------------------
--- SIGMA MELT ENGINE
+-- SIGMA MELT ENGINE (Passes from Non-Linear Runtime to Linear Type)
 -----------------------------------------------------------------------
 
-||| Recursively builds a Linear Dependent Multiset from a standard runtime list.
+||| Recursively builds a Linear Multiset (LMultiset) from a standard runtime list.
 ||| This is the magic step that elevates runtime data into the type signature!
 public export
-buildLDep : (c : List (a, Integer)) -> LDepMultiset a c
+buildLDep : (c : List (a, Integer)) -> LMultiset a c
 buildLDep [] = LEmptyM
 buildLDep ((item, count) :: rest) = LAddM item count (buildLDep rest)
 
-||| Melts a standard SparseMaxel (Legacy) into a Dynamic Universe wrapper (Sigma).
+||| Melts a standard Vexel (Legacy) into a Dynamic Universe wrapper (Sigma).
 ||| This takes the raw non-linear field and locks it into the DPair wrapper.
 public export
-sigmaMeltMaxel : Simplex.Core.SparseMaxel -> Simplex.SigmaLinear.DynamicUniverse (Simplex.Core.Geometry, Simplex.Core.Amplitude)
-sigmaMeltMaxel mset = 
+sigmaMeltVexel : Simplex.Core.Vexel -> Simplex.SigmaLinear.DynamicUniverse (Simplex.Core.Geometry, Simplex.Core.Amplitude)
+sigmaMeltVexel mset = 
   let c = multisetToList mset
   in (c ** buildLDep c)
 
@@ -31,31 +31,31 @@ sigmaMeltChain sub =
   in (edges ** buildLDep edges)
 
 -----------------------------------------------------------------------
--- SIGMA FREEZE ENGINE
+-- SIGMA FREEZE ENGINE (Passes from Linear Type back to Non-Linear Runtime)
 -----------------------------------------------------------------------
 
 ||| Tail-recursive helper to freeze a linear multiset into an unrestricted list.
 ||| The accumulator ensures the linear variable `prev` is consumed in a linear context,
 ||| avoiding Idris 2's strict QTT restrictions on placing linear variables inside unrestricted constructors.
-freezeLDepAcc : (acc : List (a, Integer)) -> (1 m : LDepMultiset a c) -> List (a, Integer)
+freezeLDepAcc : (acc : List (a, Integer)) -> (1 m : LMultiset a c) -> List (a, Integer)
 freezeLDepAcc acc LEmptyM = acc
 freezeLDepAcc acc (LAddM item count prev) = freezeLDepAcc ((item, count) :: acc) prev
 
-||| Freezes a Linear Dependent Multiset back into a standard runtime list.
+||| Freezes a Linear Multiset back into a standard runtime list.
 public export
-freezeLDep : {0 c : List (a, Integer)} -> (1 m : LDepMultiset a c) -> List (a, Integer)
+freezeLDep : {0 c : List (a, Integer)} -> (1 m : LMultiset a c) -> List (a, Integer)
 freezeLDep m = freezeLDepAcc [] m
 
-||| Freezes a Dynamic Universe back into the legacy SparseMaxel.
+||| Freezes a Dynamic Universe back into the legacy Vexel.
 ||| This allows the visualizer to render the output cleanly.
 public export
-sigmaFreezeMaxel : Simplex.SigmaLinear.DynamicUniverse (Simplex.Core.Geometry, Simplex.Core.Amplitude) -> Simplex.Core.SparseMaxel
-sigmaFreezeMaxel (c ** m) = fromList (freezeLDep m)
+sigmaFreezeVexel : Simplex.SigmaLinear.DynamicUniverse (Simplex.Core.Geometry, Simplex.Core.Amplitude) -> Simplex.Core.Vexel
+sigmaFreezeVexel (c ** m) = fromList (freezeLDep m)
 
-||| Freezes a Geometry-only multiset boundary into a legacy SparseMaxel.
+||| Freezes a Geometry-only multiset boundary into a legacy Vexel.
 public export
-sigmaFreezeGeometryMaxel : Simplex.SigmaLinear.DynamicSparseMaxel -> Simplex.Core.SparseMaxel
-sigmaFreezeGeometryMaxel (c ** m) = 
+sigmaFreezeGeometryVexel : Simplex.SigmaLinear.DynamicVexel -> Simplex.Core.Vexel
+sigmaFreezeGeometryVexel (c ** m) = 
   let geomList = freezeLDep m
       maxelList = map (\(g, count) => ((g, emptyAmplitude), count)) geomList
   in fromList maxelList

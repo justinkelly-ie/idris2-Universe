@@ -2,7 +2,7 @@ module Main
 
 import Simplex.Core
 import Simplex.SigmaLinear
-import SigmaBridge
+import SigmaGate
 import Math.Chromogeometry
 import Math.Multiset
 
@@ -14,22 +14,22 @@ main = do
   let geom = MkPixel 0 0
   let amp = emptyAmplitude
   
-  -- Create a SparseMaxel with count 5
+  -- Create a Vexel with count 5
   let initialMaxel = AddM (geom, amp) 5 ZeroM
   
-  putStrLn "1. Raw non-linear SparseMaxel constructed (Count = 5)."
+  putStrLn "1. Raw non-linear Vexel constructed (Count = 5)."
   
   -- Melt into Dynamic Universe
-  let dynamicU = sigmaMeltMaxel initialMaxel
+  let dynamicU = sigmaMeltVexel initialMaxel
   putStrLn "2. Melted into Dynamic Universe DPair."
   
   -- Evolve 1 step (which structurally forces the linear engine to increment count)
   let nextU = runDynamicEpoch dynamicU
   putStrLn "3. Executed runDynamicEpoch (Linear Execution mapped to Math Spec)."
   
-  -- Freeze back to legacy SparseMaxel
-  let frozenMaxel = sigmaFreezeMaxel nextU
-  putStrLn "4. Frozen back to legacy SparseMaxel."
+  -- Freeze back to legacy Vexel
+  let frozenMaxel = sigmaFreezeVexel nextU
+  putStrLn "4. Frozen back to legacy Vexel."
   
   putStrLn "--- Testing Multiset Boundary Operator ---"
   
@@ -51,8 +51,8 @@ main = do
   let dynamicBoundary = runBoundary dynamicChain
   putStrLn "2. Executed runBoundary (Linear Shredding mapped to Topo Spec)."
   
-  -- Freeze back to Legacy SparseMaxel (Vertices)
-  let frozenBoundary = sigmaFreezeGeometryMaxel dynamicBoundary
+  -- Freeze back to Legacy Vexel (Vertices)
+  let frozenBoundary = sigmaFreezeGeometryVexel dynamicBoundary
   
   let boundaryCounts = multisetToList frozenBoundary
   case boundaryCounts of
