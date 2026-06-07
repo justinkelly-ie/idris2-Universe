@@ -30,10 +30,21 @@ implementation ConservesEnergy (Pixel Integer) (Pixel Integer) where
     let res = quadranceNL Blue (MkPixel 0 0) (MkPixel x1 y1) == quadranceNL Blue (MkPixel 0 0) (MkPixel x2 y2)
     in Builtin.(#) res (Builtin.(#) (MkPixel x1 y1) (MkPixel x2 y2))
 
+total
+multiplicityAllL : (1 _ : Multiset a) -> (Integer, Multiset a)
+multiplicityAllL ZeroM = (0, ZeroM)
+multiplicityAllL (AddM x c xs) =
+  let (restVal, restM) = multiplicityAllL xs
+  in (abs c + restVal, AddM x c restM)
+
 ||| For the Unified Multiset (Pixel Integer, IntPolynumber) model, Energy is mathematically conserved if the total 
 ||| multiset sizes (or total degree) of the input polynomial equals the output polynomial.
 public export
 implementation ConservesEnergy (Multiset (Pixel Integer, IntPolynumber)) (Multiset (Pixel Integer, IntPolynumber)) where
-  isEnergyConserved sp1_mset sp2_mset = Builtin.(#) True (Builtin.(#) sp1_mset sp2_mset)
+  isEnergyConserved sp1_mset sp2_mset =
+    let (v1, m1) = multiplicityAllL sp1_mset
+        (v2, m2) = multiplicityAllL sp2_mset
+        res = v1 == v2
+    in Builtin.(#) res (Builtin.(#) m1 m2)
 
 

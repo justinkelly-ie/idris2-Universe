@@ -99,6 +99,7 @@ subRationalLocal (n1, d1) (n2, d2) = addRationalLocal (n1, d1) (-n2, d2)
 
 ||| For a pixel p, find the smallest closed loop containing p and return the rational spread deficit
 ||| as a (numerator, denominator) pair.
+||| Uses the single-step Archimedes quadrea formula to avoid intermediate coefficient explosion.
 public export
 plaquetteDefect : Substrate -> Geometry -> (Integer, Integer)
 plaquetteDefect sub p1 =
@@ -119,15 +120,26 @@ plaquetteDefect sub p1 =
   in case findSmallestLoop loops of
        Nothing => (0, 1) -- Flat space if no cycle is found
        Just (p1', p2', p3', p4') =>
-         -- Calculate the spread at each of the four vertices
-         let s1 = spreadNL Blue p1' p4' p2'
-             s2 = spreadNL Blue p2' p1' p3'
-             s3 = spreadNL Blue p3' p2' p4'
-             s4 = spreadNL Blue p4' p3' p1'
-             -- Sum the rational spreads
-             sumS = foldl addRationalLocal (0, 1) [s1, s2, s3, s4]
-             -- Deficit is Flat (4/1) - sum
-         in subRationalLocal (4, 1) sumS
+         let q1 = quadranceNL Blue p1' p2'
+             q2 = quadranceNL Blue p2' p3'
+             q3 = quadranceNL Blue p3' p4'
+             q4 = quadranceNL Blue p4' p1'
+             
+             commonDen = 4 * q1 * q2 * q3 * q4
+         in if commonDen == 0
+               then (0, 1)
+               else
+                 let a1 = archimedesNL Blue p1' p4' p2'
+                     a2 = archimedesNL Blue p2' p1' p3'
+                     a3 = archimedesNL Blue p3' p2' p4'
+                     a4 = archimedesNL Blue p4' p3' p1'
+                     
+                     sumNum = (q2 * q3 * a1) + (q3 * q4 * a2) + (q4 * q1 * a3) + (q1 * q2 * a4)
+                     defectNum = (16 * q1 * q2 * q3 * q4) - sumNum
+                     commonDiv = gcd defectNum commonDen
+                 in if commonDiv == 0
+                       then (defectNum, commonDen)
+                       else (defectNum `div` commonDiv, commonDen `div` commonDiv)
 
 ||| Computes the positive integer cost associated with a node based on the magnitude of its plaquette defect.
 public export
@@ -227,3 +239,47 @@ ricciTransformation sub =
                          ) edges
   in fromList updatedEdges
 
+||| Computes the reciprocal spread (1/s) of a vertex angle as a rational fraction.
+||| If s = A / (4*q1*q3), then 1/s = (4*q1*q3) / A.
+||| Returns (0,1) for collinear points (zero curvature — no torsion contribution).
+recipSpreadNL : Geometry -> Geometry -> Geometry -> (Integer, Integer)
+recipSpreadNL p1 p2 p3 =
+  let (arch, den) = spreadNL Blue p1 p2 p3
+  in if arch == 0
+        then (0, 1)
+        else (den, arch)
+
+||| Checks whether the Chromogeometric Horizon has been reached in the Substrate.
+|||
+||| For each 4-cycle loop, sums the four vertex reciprocal spreads as a rational.
+||| If any loop's reciprocal spread sum meets or exceeds 2, the coordinate plane
+||| has reached metrical torsion saturation (the Three-Fold Spread Lock horizon),
+||| and scale ascension to dimension N+1 is triggered.
+|||
+||| The comparison is executed entirely in integer arithmetic via cross-multiplication.
+public export
+chromogeometricHorizon : Substrate -> Bool
+chromogeometricHorizon sub =
+  let es    = map fst (multisetToList sub)
+      nodes = substrateNodes sub
+      loops = [ (p1, p2, p3, p4)
+              | p1 <- nodes, p2 <- nodes, p3 <- nodes, p4 <- nodes
+              , p1 /= p2 && p2 /= p3 && p3 /= p4 && p4 /= p1 && p1 /= p3 && p2 /= p4
+              , connected es p1 p2
+              , connected es p2 p3
+              , connected es p3 p4
+              , connected es p4 p1
+              ]
+      loopAtHorizon : (Geometry, Geometry, Geometry, Geometry) -> Bool
+      loopAtHorizon (p1', p2', p3', p4') =
+        let rs1 = recipSpreadNL p1' p4' p2'
+            rs2 = recipSpreadNL p2' p1' p3'
+            rs3 = recipSpreadNL p3' p2' p4'
+            rs4 = recipSpreadNL p4' p3' p1'
+            (sumNum, sumDen) = foldl addRationalLocal (0, 1) [rs1, rs2, rs3, rs4]
+        -- addRationalLocal uses lcm, so sumDen is always non-negative.
+        -- sum >= 2  iff  sumNum >= 2 * sumDen  (denominator guaranteed positive).
+        in if sumDen <= 0
+              then False
+              else sumNum >= 2 * sumDen
+  in any loopAtHorizon loops

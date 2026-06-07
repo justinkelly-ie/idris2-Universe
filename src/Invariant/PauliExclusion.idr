@@ -39,7 +39,9 @@ hasDuplicates (p :: ps) =
 public export
 implementation ObeysPauliExclusion (Multiset (Pixel Integer, IntPolynumber)) where
   hasNoCoordinateOverlap items_mset =
-    let coords = map (fst . fst) (multisetToList items_mset)
-    in not (hasDuplicates coords)
+    let list = multisetToList items_mset
+        coords = map (fst . fst) list
+        countsOk = all (\(_, count) => count <= 1) list
+    in not (hasDuplicates coords) && countsOk
 
 

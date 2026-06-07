@@ -3,15 +3,10 @@ module Evolution.Transform
 import Simplex.Core
 import Simplex.Twist
 import Evolution.State
-
-import Evolution.State
-import Simplex.Core
-import Simplex.Twist
 import Math.Chromogeometry
-
-import Math.Multiset
 import Math.Multiset
 import Math.IntPolynumber
+import Math.SpreadPolynumber
 import Data.List
 import Data.Vect
 import Decidable.Equality
@@ -96,24 +91,47 @@ ascendScale macroGeom items_mset =
 -- 4. THREE-FOLD ASCENSION PROOF
 --
 
+||| Validates whether a local space-time region has reached the scale-ascension horizon.
+|||
+||| Implements the Deterministic Algebraic Scale Promotion: the 137 scalar tally threshold
+||| is replaced by the Chromogeometric Horizon (Three-Fold Spread Lock). Ascension is
+||| triggered when, for any 4-cycle loop in the Substrate, the reciprocal spread sum
+|||   sum_i (1 / s_i) >= 2
+||| meaning metrical torsion saturates the coordinate plane and forces a fold to N+1.
+|||
+||| The `metric` and `stateSpace` parameters are retained for API compatibility and
+||| future Goh Factorisation integration.
+||| Computes the degree (maximum alpha power) of an IntPolynumber.
+public export
+polyDegree : IntPolynumber -> Nat
+polyDegree ZeroM = 0
+polyDegree (AddM (alpha, beta) _ rest) = max alpha (polyDegree rest)
 
+||| Extracts the aggregate partition polynomial of a Vexel.
+public export
+extractVexelPoly : Vexel -> IntPolynumber
+extractVexelPoly vex =
+  foldl (\acc, ((_, poly), count) =>
+          addIntPoly acc (scaleMultiset count poly)
+        ) emptyIntPoly (multisetToList vex)
 
-||| Validates if a local space-time region matches the exact 137 Primorial threshold to level up.
-||| Driven by your clean list-comprehension triad extractor and GCD-bounded rational twist engine.
+||| Validates the Goh Factorisation algebraic horizon for the state.
+public export
+gohFactorisationHorizon : Vexel -> Bool
+gohFactorisationHorizon vex =
+  let p = extractVexelPoly vex
+      n = polyDegree p
+  in n > 0 && p == memoSpreadPoly n
+
+||| Validates whether a local space-time region has reached the scale-ascension horizon.
+|||
+||| Implements the Deterministic Algebraic Scale Promotion: the 137 scalar tally threshold
+||| is replaced by the Chromogeometric Horizon (Three-Fold Spread Lock) and/or the Goh Factorisation.
+||| Ascension is triggered when either:
+|||   1. Chromogeometric: sum_i (1 / s_i) >= 2
+|||   2. Goh Factorisation: P(s) = prod_{d|n} Psi_d(s)
 public export
 canAscend : Metric -> Substrate -> Vexel -> Bool
-canAscend metric substrate stateSpace =
-  let -- 1. Current State Output: Total active particle energy density in the State Space
-      currentOutput = stateLag stateSpace
-      
-      -- 2. Ancestral Lag: Total structural linkage counts across the Substrate poset network
-      ancestralLag = cast (multiplicityAll substrate)
-      
-      -- 3. Twisting Capacity: The GCD-reduced, path-summed angular spread curvature
-      twistingDegrees = cast (computeTwist metric substrate)
-      
-      -- Combined combinatoric real estate must meet or breach the 137 Leibniz capacity barrier
-      totalComputeValue = currentOutput + ancestralLag + twistingDegrees
-  in totalComputeValue >= 137
-
+canAscend _ substrate stateSpace =
+  chromogeometricHorizon substrate || gohFactorisationHorizon stateSpace
 

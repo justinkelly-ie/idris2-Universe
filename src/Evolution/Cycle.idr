@@ -58,7 +58,7 @@ capacityLimit = cast (calculateGridLimit constructPrimorialGrid)
 public export
 sigmaGateAudit : Substrate -> Vexel -> Bool
 sigmaGateAudit sub field =
-  let -- 1. Melt the raw causal substrate poset into a linear LDepSubstrate
+  let -- 1. Melt the raw causal substrate multiset into a linear LDepSubstrate
       dynamicChain = sigmaMeltChain sub
       -- 2. Execute the linear boundary operator to shred edges to vertices
       dynamicBoundary = runBoundary dynamicChain
@@ -121,6 +121,49 @@ runEpochs (S k) state =
   -- Red and Green yield mathematically identical canAscend results.
   let cycled = runAdaptiveCycle capacityLimit Blue (MkPixel 0 0) state
   in runEpochs k cycled
+
+||| A strictly linear version of stepUniverseLocalized.
+||| Consumes the linear universe state in-place, steps its multisets, and returns the next dynamic state.
+public export
+lstepUniverseLocalized : Integer
+                      -> Metric
+                      -> (1 state : LUniverseState edges contents)
+                      -> DynamicLUniverseState
+lstepUniverseLocalized capacityLimit metric (MkLUniverseState substrate stateVector) =
+  let MkLUnboxResult subList = lunboxLMultiset substrate
+      MkLUnboxResult stateList = lunboxLMultiset stateVector
+      (nextSub, nextField) = stepUniverseLocalized capacityLimit metric (fromList subList) (fromList stateList)
+      nextEdges = multisetToList nextSub
+      nextContents = multisetToList nextField
+      newSubState = buildLDep nextEdges
+      newFieldState = buildLDep nextContents
+  in (nextEdges ** nextContents ** MkLUniverseState newSubState newFieldState)
+
+||| A strictly linear version of runAdaptiveCycle.
+||| Executes a fully verified in-place scale transition, collapsing the system's active
+||| mass-energy to the macro-target coordinate upon triggering the chromogeometric or Goh horizon.
+public export
+lrunAdaptiveCycle : Integer
+                 -> Metric
+                 -> Simplex.Core.Geometry
+                 -> (1 state : LUniverseState edges contents)
+                 -> DynamicLUniverseState
+lrunAdaptiveCycle capacityLimit metric macroTarget (MkLUniverseState substrate stateVector) =
+  let MkLUnboxResult subList = lunboxLMultiset substrate
+      MkLUnboxResult stateList = lunboxLMultiset stateVector
+      (postSubstrate, postField) = stepUniverseLocalized capacityLimit metric (fromList subList) (fromList stateList)
+      topologicalGate = canAscend metric postSubstrate postField 
+                     && sigmaGateAudit postSubstrate postField
+  in if topologicalGate
+        then
+          let postFieldL = buildLDep (multisetToList postField)
+              ascendedFieldL = lascendScale macroTarget postFieldL
+              postSubL = buildLDep (multisetToList postSubstrate)
+          in (multisetToList postSubstrate ** computeAscendContents macroTarget (multisetToList postField) ** MkLUniverseState postSubL ascendedFieldL)
+        else
+          let postFieldL = buildLDep (multisetToList postField)
+              postSubL = buildLDep (multisetToList postSubstrate)
+          in (multisetToList postSubstrate ** multisetToList postField ** MkLUniverseState postSubL postFieldL)
 
 
 

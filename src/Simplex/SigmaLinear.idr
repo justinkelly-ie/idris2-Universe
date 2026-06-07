@@ -112,3 +112,54 @@ DynamicUniverse a = (c : List (a, Integer) ** LMultiset a c)
 public export
 runDynamicEpoch : DynamicUniverse a -> DynamicUniverse a
 runDynamicEpoch (c ** mesh) = (nextContents c ** stepUniverse mesh)
+
+-----------------------------------------------------------------------
+-- PHASE 5: LINEAR SCALE PROMOTION (The L-Scale Promotion Layer)
+-----------------------------------------------------------------------
+
+||| A strictly linear, type-verified Universe State.
+||| Tracks both the substrate edges and state vector contents at the type level.
+public export
+data LUniverseState : (edges : List (Edge, Integer)) -> 
+                      (contents : List ((Simplex.Core.Geometry, Amplitude), Integer)) -> 
+                      Type where
+  MkLUniverseState : (1 substrate : LSubstrate edges) -> 
+                     (1 stateVector : LMultiset (Simplex.Core.Geometry, Amplitude) contents) -> 
+                     LUniverseState edges contents
+
+||| The Dynamic Linear Universe State.
+||| Wraps the type-verified linear state in a double dependent pair.
+public export
+0 DynamicLUniverseState : Type
+DynamicLUniverseState = 
+  (edges : List (Edge, Integer) ** 
+   contents : List ((Simplex.Core.Geometry, Amplitude), Integer) ** 
+   LUniverseState edges contents)
+
+||| Sums the amplitudes of a list of states.
+public export
+sumLinearAmplitudes : List ((Simplex.Core.Geometry, Amplitude), Integer) -> Amplitude
+sumLinearAmplitudes [] = emptyIntPoly
+sumLinearAmplitudes (((_, poly), count) :: xs) = 
+  addIntPoly (scaleMultiset count poly) (sumLinearAmplitudes xs)
+
+||| Computes the type-level content index of a post-ascension Vexel.
+public export
+computeAscendContents : (target : Simplex.Core.Geometry) -> 
+                         List ((Simplex.Core.Geometry, Amplitude), Integer) -> 
+                         List ((Simplex.Core.Geometry, Amplitude), Integer)
+computeAscendContents target contents =
+  let sumPoly = sumLinearAmplitudes contents
+  in [((target, sumPoly), 1)]
+
+||| Strictly linear scale promotion.
+||| Consumes the linear state vector in-place, sums the amplitudes, and returns 
+||| a type-verified singleton LMultiset at the target coordinate.
+public export
+lascendScale : {0 contents : List ((Simplex.Core.Geometry, Amplitude), Integer)} -> 
+               (target : Simplex.Core.Geometry) -> 
+               (1 state : LMultiset (Simplex.Core.Geometry, Amplitude) contents) -> 
+               LMultiset (Simplex.Core.Geometry, Amplitude) (computeAscendContents target contents)
+lascendScale target state =
+  let MkLUnboxResult frozen = lunboxLMultiset state
+  in LAddM (target, sumLinearAmplitudes frozen) 1 LEmptyM

@@ -113,6 +113,7 @@ stepUniverseLocalized capacityLimit metric currentSubstrate stateVector =
                                  
       nextField = fromList processedItems
       
-      -- 3. Dynamically co-evolve the Substrate graph with the active field energy
-      deformedSub = deformSubstrate currentSubstrate nextField
+      -- 3. Dynamically co-evolve the Substrate graph with the active field energy (pre-resonance)
+      preResonanceField = fromList evolvedStates
+      deformedSub = deformSubstrate currentSubstrate preResonanceField
   in (deformedSub, nextField)

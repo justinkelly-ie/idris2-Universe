@@ -34,17 +34,6 @@ sigmaMeltChain sub =
 -- SIGMA FREEZE ENGINE (Passes from Linear Type back to Non-Linear Runtime)
 -----------------------------------------------------------------------
 
-||| Tail-recursive helper to freeze a linear multiset into an unrestricted list.
-||| The accumulator ensures the linear variable `prev` is consumed in a linear context,
-||| avoiding Idris 2's strict QTT restrictions on placing linear variables inside unrestricted constructors.
-freezeLDepAcc : (acc : List (a, Integer)) -> (1 m : LMultiset a c) -> List (a, Integer)
-freezeLDepAcc acc LEmptyM = acc
-freezeLDepAcc acc (LAddM item count prev) = freezeLDepAcc ((item, count) :: acc) prev
-
-||| Freezes a Linear Multiset back into a standard runtime list.
-public export
-freezeLDep : {0 c : List (a, Integer)} -> (1 m : LMultiset a c) -> List (a, Integer)
-freezeLDep m = freezeLDepAcc [] m
 
 ||| Freezes a Dynamic Universe back into the legacy Vexel.
 ||| This allows the visualizer to render the output cleanly.
