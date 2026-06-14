@@ -118,15 +118,13 @@ stepUniverseList capacityLimit metric subList stateList =
 ||| Drives a complete generational evolution step where time-propagation is 
 ||| entirely localized and driven by the restored SpreadPolynumber bridge.
 public export
-stepUniverseLocalized : {0 totalLag : Integer}
-                     -> Nat
+stepUniverseLocalized : Nat
                      -> Metric
                      -> Substrate
-                     -> (stateVector : Vexel)
-                     -> (prf : stateLag stateVector = totalLag)
-                     -> (nextSub : Substrate ** nextField : Vexel ** stateLag nextField = totalLag)
-stepUniverseLocalized capacityLimit metric currentSubstrate stateVector prf =
+                     -> Vexel
+                     -> (Substrate, Vexel)
+stepUniverseLocalized capacityLimit metric currentSubstrate stateVector =
   let (nextSub, nextField) = stepUniverseList capacityLimit metric (multisetToList currentSubstrate) (multisetToList stateVector)
       nextSubM = fromList nextSub
       nextFieldM = fromList nextField
-  in (nextSubM ** nextFieldM ** believe_me prf)
+  in (nextSubM, nextFieldM)

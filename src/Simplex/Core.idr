@@ -89,14 +89,12 @@ stateLag m = multiplicityAll m
 ||| quantum state vector.
 |||
 public export
-record UniverseState (0 totalLag : Integer) where
+record UniverseState where
   constructor MkUniverseState
   ||| The directed causal relations (spacetime / poset / substrate).
   substrate    : Substrate
   ||| The quantum amplitude assignments (matter fields / state vector).
   stateVector  : Vexel
-  ||| Proof that the state vector's Leibniz Lag matches the totalLag invariant.
-  lagProof     : stateLag stateVector = totalLag
 
 -----------------------------------------------------------------------
 -- 6. SUBSTRATE UTILITIES
@@ -241,8 +239,8 @@ serializeSubstrate sub =
 
 ||| Serializes the complete UniverseState to a structured JSON string.
 public export
-serializeUniverseState : {0 totalLag : Integer} -> UniverseState totalLag -> String
-serializeUniverseState (MkUniverseState sub stateVec prf) =
+serializeUniverseState : UniverseState -> String
+serializeUniverseState (MkUniverseState sub stateVec) =
   "{\"substrate\":" ++ serializeSubstrate sub ++
   ",\"stateVector\":" ++ serializeVexel stateVec ++ "}"
 

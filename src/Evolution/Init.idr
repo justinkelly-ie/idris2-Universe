@@ -16,7 +16,7 @@ import Evolution.Cycle
 ||| It seeds the grid with foundational points (like the Water/H-Bond origin roots)
 ||| to jumpstart the relational clock loop safely at T=0.
 public export
-seedChromogeometricVacuum : (capacityLimit : Nat) -> UniverseState 3
+seedChromogeometricVacuum : (capacityLimit : Nat) -> UniverseState
 seedChromogeometricVacuum capacityLimit =
   let -- 1. Define the baseline primordial coordinate vertices (The Root Geometry)
       origin = MkPixel 0 0
@@ -32,5 +32,5 @@ seedChromogeometricVacuum capacityLimit =
       -- The emptyIntPoly represents the quiet vacuum before spreadPoly convolution triggers
       vacuumAmp  = emptyIntPoly
       initFields = AddM (origin, vacuumAmp) 1 (AddM (basisX, vacuumAmp) 1 (AddM (basisY, vacuumAmp) 1 ZeroM))
-  in MkUniverseState initSubstrate initFields Refl
+  in MkUniverseState initSubstrate initFields
 

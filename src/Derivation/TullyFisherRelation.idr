@@ -44,10 +44,8 @@ ExhibitsGalacticRotation Vexel where
         velocitySq = MkFraction (visibleMass * primordialGridStates) darkMatterStates
     in (MkQuadrance velocitySq, MkFraction visibleMass 1)
 
-||| Galactic rotation for a full UniverseState.
-||| The substrate causal density contributes to the effective rotational drag.
 public export
-{totalLag : Integer} -> ExhibitsGalacticRotation (UniverseState totalLag) where
+ExhibitsGalacticRotation UniverseState where
   calculateRotationMetrics state =
     let visibleMass = Prelude.integerToNat (stateLag (stateVector state))
         causalDrag  = substrateLag (substrate state)

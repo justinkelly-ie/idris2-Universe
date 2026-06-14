@@ -63,14 +63,13 @@ sigmaGateAudit sub field =
 ||| The localized propagator organically computes time at the exact geometric coordinate,
 ||| eliminating the uniform gate sequence entirely.
 public export
-runAdaptiveCycle : {0 totalLag : Integer}
-                -> Nat         -- The capacityLimit (137)
+runAdaptiveCycle : Nat         -- The capacityLimit (137)
                 -> Metric      -- Gauge metric configuration (Blue/Red/Green)
                 -> Simplex.Core.Geometry        -- Target macro coordinate for Scale N+1 condensation
-                -> UniverseState totalLag   -- Current generation state
-                -> UniverseState totalLag   -- Next generation state
-runAdaptiveCycle capacityLimit metric macroTarget (MkUniverseState sub field prf) =
-  let (postSubstrate ** postField ** prfPost) = stepUniverseLocalized capacityLimit metric sub field prf
+                -> UniverseState   -- Current generation state
+                -> UniverseState   -- Next generation state
+runAdaptiveCycle capacityLimit metric macroTarget (MkUniverseState sub field) =
+  let (postSubstrate, postField) = stepUniverseLocalized capacityLimit metric sub field
       
       -- Enforce the SigmaGate boundary check alongside the metric spread check
       topologicalGate = canAscend metric postSubstrate postField 
@@ -84,7 +83,7 @@ runAdaptiveCycle capacityLimit metric macroTarget (MkUniverseState sub field prf
           -- for the next scale layer up.
           -- The field amplitudes collapse down into the monolithic macro-node target.
           let ascendedField = ascendScale macroTarget postField
-          in MkUniverseState postSubstrate ascendedField (believe_me prfPost)
+          in MkUniverseState postSubstrate ascendedField
           
         else
           -- =================================================================
@@ -92,7 +91,7 @@ runAdaptiveCycle capacityLimit metric macroTarget (MkUniverseState sub field prf
           -- =================================================================
           -- The proof fails or the threshold isn't met. The substrate is retained
           -- unaltered, grinding deeper into the high-frequency polynomial harmonics.
-          MkUniverseState postSubstrate postField prfPost
+          MkUniverseState postSubstrate postField
 
 ||| Runs N successive Adaptive Cycles.
 |||
@@ -106,7 +105,7 @@ runAdaptiveCycle capacityLimit metric macroTarget (MkUniverseState sub field prf
 ||| @n      Number of cycles to execute
 ||| @state  Universe state entering the first cycle
 public export
-runEpochs : {0 totalLag : Integer} -> (n : Nat) -> UniverseState totalLag -> UniverseState totalLag
+runEpochs : (n : Nat) -> UniverseState -> UniverseState
 runEpochs Z     state = state
 runEpochs (S k) state =
   -- Blue is passed unconditionally by the Three-Fold Quadrea Theorem (A_b = -A_r = -A_g).

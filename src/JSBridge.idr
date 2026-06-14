@@ -89,7 +89,7 @@ runAdaptiveCycleBridge capacityLimitStr metricStr macroTargetStr substrateStr st
                       _ => MkPixel 0 0
       sub = parseSubstrate substrateStr
       stateVec = parseVexel stateVectorStr
-      stateIn = MkUniverseState sub stateVec Refl
+      stateIn = MkUniverseState sub stateVec
       stateOut = runAdaptiveCycle capLimit metric macroTarget stateIn
   in serializeUniverseState stateOut
 
@@ -103,8 +103,8 @@ stepUniverseLocalizedBridge capacityLimitStr metricStr substrateStr stateVectorS
                  _ => Blue
       sub = parseSubstrate substrateStr
       stateVec = parseVexel stateVectorStr
-      (subOut ** stateVecOut ** prfOut) = stepUniverseLocalized capLimit metric sub stateVec Refl
-      stateOut = MkUniverseState subOut stateVecOut prfOut
+      (subOut, stateVecOut) = stepUniverseLocalized capLimit metric sub stateVec
+      stateOut = MkUniverseState subOut stateVecOut
   in serializeUniverseState stateOut
 
 -- EXPOSING TO JAVASCRIPT
