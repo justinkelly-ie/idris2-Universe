@@ -32,9 +32,5 @@ seedChromogeometricVacuum capacityLimit =
       -- The emptyIntPoly represents the quiet vacuum before spreadPoly convolution triggers
       vacuumAmp  = emptyIntPoly
       initFields = AddM (origin, vacuumAmp) 1 (AddM (basisX, vacuumAmp) 1 (AddM (basisY, vacuumAmp) 1 ZeroM))
-  in MkUniverseState initSubstrate initFields (believe_me threeEqualsThree)
-  where
-    threeEqualsThree : 3 = 3
-    threeEqualsThree = Refl
-
+  in MkUniverseState initSubstrate initFields Refl
 
