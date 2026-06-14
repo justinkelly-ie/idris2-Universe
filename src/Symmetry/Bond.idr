@@ -1,9 +1,6 @@
 module Symmetry.Bond
 
-import Evolution.State
-
-import Evolution.State
-
+import Simplex.Core
 import Math.Polynumber
 
 %default total
@@ -21,6 +18,7 @@ import Math.Polynumber
 public export
 record Bond where
   constructor MkBond
-  1 state : Multiset (Pixel Integer, IntPolynumber)
+  1 state : Vexel
+
 
 

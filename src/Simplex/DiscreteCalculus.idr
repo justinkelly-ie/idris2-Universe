@@ -1,6 +1,5 @@
 module Simplex.DiscreteCalculus
 
-import Math.Polynumber
 import Math.IntPolynumber
 import Math.SpreadPolynumber
 import Math.Multiset
@@ -9,6 +8,7 @@ import Simplex.Core
 import Simplex.SigmaLinear
 import Evolution.Cycle
 import System.CosmicPartition
+import Math.BoxInt
 
 %default total
 
@@ -82,7 +82,9 @@ substrateIntegral substrate field =
       getEnergy : Simplex.Core.Geometry -> Integer
       getEnergy geom =
         case filter (\((g, _), _) => g == geom) states of
-          (((_, amp), _) :: _) => multiplicityAll amp
+          (((_, amp), _) :: _) =>
+            let (MkUr val) = boxToInt (multiplicityAll amp)
+            in val
           []                   => 0
           
       edgeContribution : ((Simplex.Core.Geometry, Simplex.Core.Geometry), Integer) -> Integer
@@ -118,7 +120,7 @@ public export
 pathEnsemble : Nat -> UniverseState -> Vexel
 pathEnsemble Z state = stateVector state
 pathEnsemble (S k) state =
-  let capLimit = cast (calculateGridLimit constructPrimorialGrid)
+  let capLimit = calculateGridLimit constructPrimorialGrid
       cycled = runAdaptiveCycle capLimit Blue (MkPixel 0 0) state
   in addMultiset (stateVector state) (pathEnsemble k cycled)
 
@@ -135,7 +137,7 @@ applyCoboundary stateVector substrate =
   let edges  = multisetToList substrate
       states = multisetToList stateVector
       
-      getEnergy : Pixel Integer -> Integer
+      getEnergy : Geometry -> Integer
       getEnergy geom =
         case filter (\((g, _), _) => g == geom) states of
           ((_, c) :: _) => c

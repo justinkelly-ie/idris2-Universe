@@ -40,7 +40,7 @@ interface ExhibitsGalacticRotation a where
 public export
 ExhibitsGalacticRotation Vexel where
   calculateRotationMetrics pip =
-    let visibleMass = cast {to = Nat} (stateLag pip)
+    let visibleMass = Prelude.integerToNat (stateLag pip)
         velocitySq = MkFraction (visibleMass * primordialGridStates) darkMatterStates
     in (MkQuadrance velocitySq, MkFraction visibleMass 1)
 
@@ -49,7 +49,7 @@ ExhibitsGalacticRotation Vexel where
 public export
 ExhibitsGalacticRotation UniverseState where
   calculateRotationMetrics state =
-    let visibleMass = cast {to = Nat} (stateLag (stateVector state))
+    let visibleMass = Prelude.integerToNat (stateLag (stateVector state))
         causalDrag  = substrateLag (substrate state)
         velocitySq  = MkFraction ((visibleMass + causalDrag) * primordialGridStates) darkMatterStates
     in (MkQuadrance velocitySq, MkFraction visibleMass 1)

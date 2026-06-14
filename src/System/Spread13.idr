@@ -17,6 +17,6 @@ import Math.IntPolynumber
 ||| pushes the dynamic partition grid to its limits, causing mass Decoherence into Dark Energy.
 public export
 evaluateS13 : IntPolynumber
-evaluateS13 = S13
+evaluateS13 = S13 ()
 
 

@@ -1,11 +1,7 @@
 module Invariant.PauliExclusion
 
-import Evolution.State
-
-import Evolution.State
-
+import Simplex.Core
 import Math.Multiset
-import Math.Polynumber
 
 %default total
 
@@ -19,7 +15,7 @@ interface ObeysPauliExclusion a where
   hasNoCoordinateOverlap : a -> Bool
 
 ||| Helper function to check if a pixel exists in a list
-isPixelInList : Pixel Integer -> List (Pixel Integer) -> Bool
+isPixelInList : Geometry -> List Geometry -> Bool
 isPixelInList _ [] = False
 isPixelInList (MkPixel x y) ((MkPixel x' y') :: ps) =
   if (x == x' && y == y') 
@@ -27,17 +23,17 @@ isPixelInList (MkPixel x y) ((MkPixel x' y') :: ps) =
     else isPixelInList (MkPixel x y) ps
 
 ||| Helper function to check for any duplicates in a list of pixels
-hasDuplicates : List (Pixel Integer) -> Bool
+hasDuplicates : List Geometry -> Bool
 hasDuplicates [] = False
 hasDuplicates (p :: ps) = 
   if isPixelInList p ps 
     then True 
     else hasDuplicates ps
 
-||| A Multiset of (Geometry, Amplitude) obeys Pauli Exclusion
+||| A Vexel obeys Pauli Exclusion
 ||| if and only if no two entries share the exact same coordinates.
 public export
-implementation ObeysPauliExclusion (Multiset (Pixel Integer, IntPolynumber)) where
+implementation ObeysPauliExclusion Vexel where
   hasNoCoordinateOverlap items_mset =
     let list = multisetToList items_mset
         coords = map (fst . fst) list

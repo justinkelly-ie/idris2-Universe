@@ -41,7 +41,7 @@ calculateNaturalFolds units (S k) =
   -- In rational trigonometry, $S_n(s)$ generates regular harmonic oscillations.
   -- The substrate physically twists based on the ratio of units to the polynomial degree.
   -- Here we model the discrete folds as the integer division of units across the spread curve.
-  let folds : Nat = cast ( (cast units {to=Integer}) `div` (cast (S k) {to=Integer}) )
+  let folds : Nat = Prelude.integerToNat (natToInteger units `div` natToInteger (S k))
   in MkFoldedStructure units (S k) folds
 
 ||| 1. The Alpha Helix Model (Protein Folding)

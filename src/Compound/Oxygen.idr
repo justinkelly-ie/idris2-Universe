@@ -5,11 +5,6 @@ import Symmetry.Electron
 import Compound.Element
 import Evolution.Gate
 
-import Simplex.Core
-import Symmetry.Electron
-import Evolution.Gate
-import Compound.Element
-
 import Math.Multiset
 import Math.IntPolynumber
 import Math.SpreadPolynumber
@@ -42,13 +37,13 @@ public export
 record OxygenAtom where
   constructor MkOxygen
   ||| The nucleus: 8 baryonic units (Z=8)
-  1 nucleus   : Multiset (Pixel Integer, IntPolynumber)
+  1 nucleus   : Vexel
   ||| The electron cloud: 8 electrons on the MatterGate
-  1 electrons : Multiset (Pixel Integer, IntPolynumber)
+  1 electrons : Vexel
 
 ||| Constructs an Oxygen atom from the pipeline.
 public export
-oxygen : Pixel Integer -> OxygenAtom
+oxygen : Geometry -> OxygenAtom
 oxygen geom =
   let nucleusState  = elementalState 8 geom
       electronCloud = fromList [((geom, spreadPoly 3), 8)]
@@ -56,7 +51,7 @@ oxygen geom =
 
 ||| The total structural lag of an Oxygen atom.
 public export
-oxygenLag : Pixel Integer -> Integer
+oxygenLag : Geometry -> Integer
 oxygenLag geom =
   let o = oxygen geom
   in multiplicityAll o.nucleus + multiplicityAll o.electrons
@@ -71,6 +66,4 @@ oxygenValence = degree BackgroundGate
 ||| 128 / 8 = 16 — each quantum is one Oxygen-unit of the latent pool.
 public export
 darkEnergyQuanta : Nat
-darkEnergyQuanta = cast (the Integer (div 128 8))
-
-
+darkEnergyQuanta = 16

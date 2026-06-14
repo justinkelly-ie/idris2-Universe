@@ -1,9 +1,6 @@
 module Symmetry.Electron
 
-import Evolution.State
-
-import Evolution.State
-
+import Simplex.Core
 import Math.Polynumber
 import Math.Multiset
 import Math.IntPolynumber
@@ -28,6 +25,4 @@ import Data.Linear
 public export
 record Electron where
   constructor MkElectron
-  1 state : Multiset (Pixel Integer, IntPolynumber)
-
-
+  1 state : Vexel

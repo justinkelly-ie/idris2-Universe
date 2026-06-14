@@ -22,13 +22,13 @@ public export
 record IronAtom where
   constructor MkIron
   ||| The nucleus: 26 baryonic units (Z=26)
-  1 nucleus   : Multiset (Pixel Integer, IntPolynumber)
+  1 nucleus   : Vexel
   ||| The electron cloud: 26 electrons on the MatterGate
-  1 electrons : Multiset (Pixel Integer, IntPolynumber)
+  1 electrons : Vexel
 
 ||| Constructs an Iron atom at a given coordinate.
 public export
-iron : Pixel Integer -> IronAtom
+iron : Geometry -> IronAtom
 iron geom =
   let nucleusState  = elementalState 26 geom
       electronCloud = fromList [((geom, spreadPoly 3), 26)]
@@ -36,7 +36,7 @@ iron geom =
 
 ||| The total structural lag of an Iron atom.
 public export
-ironLag : Pixel Integer -> Integer
+ironLag : Geometry -> Integer
 ironLag geom =
   let fe = iron geom
   in multiplicityAll fe.nucleus + multiplicityAll fe.electrons

@@ -27,13 +27,13 @@ public export
 record CarbonAtom where
   constructor MkCarbon
   ||| The nucleus: 6 baryonic units (Z=6)
-  1 nucleus   : Multiset (Pixel Integer, IntPolynumber)
+  1 nucleus   : Vexel
   ||| The electron cloud: 6 electrons on the MatterGate
-  1 electrons : Multiset (Pixel Integer, IntPolynumber)
+  1 electrons : Vexel
 
 ||| Constructs a Carbon atom at a given coordinate.
 public export
-carbon : Pixel Integer -> CarbonAtom
+carbon : Geometry -> CarbonAtom
 carbon geom =
   let nucleusState  = elementalState 6 geom
       electronCloud = fromList [((geom, spreadPoly 3), 6)]
@@ -41,7 +41,7 @@ carbon geom =
 
 ||| The total structural lag of a Carbon atom.
 public export
-carbonLag : Pixel Integer -> Integer
+carbonLag : Geometry -> Integer
 carbonLag geom =
   let c = carbon geom
   in multiplicityAll c.nucleus + multiplicityAll c.electrons

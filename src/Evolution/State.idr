@@ -43,7 +43,7 @@ record CellState where
   ||| Note: This is explicitly a Multiset Simplex.Core.Geometry (0-Chain of vertices/dust).
   ||| Because it lacks 1-Cell causal edges, this state is physically "frozen"
   ||| and possesses no relational time until it is bound to a Substrate graph.
-  maxelProjection : Multiset Simplex.Core.Geometry
+  maxelProjection : Multiset Integer Simplex.Core.Geometry
   ||| The current unified Flavor configuration.
   flavor       : Flavor
 
@@ -61,7 +61,7 @@ Eq CellState where
 
 ||| Creates a foundational, unexcited (Background) CellState.
 public export
-primordialCellState : Multiset Simplex.Core.Geometry -> CellState
+primordialCellState : Multiset Integer Simplex.Core.Geometry -> CellState
 primordialCellState supp = MkCellState Z emptyIntPoly supp Background
 
 ||| Progresses the CellState to the N-th spread polynomial.

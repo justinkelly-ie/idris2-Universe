@@ -5,6 +5,7 @@ import Simplex.DiscreteCalculus
 import Math.Multiset
 import Math.IntPolynumber
 import Data.List
+import Math.BoxInt
 
 public export
 record HodgeComponents where
@@ -23,9 +24,13 @@ innerProductPoly p1 p2 =
       coeff2 : (Nat, Nat) -> Integer
       coeff2 exp =
         case filter (\(e, _) => e == exp) list2 of
-          ((_, c) :: _) => c
+          ((_, c) :: _) =>
+            let (MkUr val) = boxToInt c
+            in val
           []            => 0
-  in sum (map (\(exp, c) => c * coeff2 exp) list1)
+  in sum (map (\(exp, c) =>
+        let (MkUr val) = boxToInt c
+        in val * coeff2 exp) list1)
 
 ||| Bilinear inner product of two Vexel fields.
 ||| Sums the inner products of their amplitudes at matching coordinates.

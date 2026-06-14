@@ -3,23 +3,18 @@ module Evolution.Cycle
 import Evolution.Clock
 import Evolution.Gate
 import Evolution.Transform
-
 import Evolution.State
-import Evolution.Gate
-import Evolution.Transform
-import Evolution.Clock
-import Simplex.Core
 import Evolution.SpreadPolynumber
+
+import Simplex.Core
+import Simplex.SigmaLinear
 
 import Math.Multiset
 import Math.Polynumber
-
-import Math.Multiset
 import Math.IntPolynumber
 import Math.Chromogeometry
 import System.CosmicPartition
 import Scale.ScaleTrajectory
-import Simplex.SigmaLinear
 import SigmaGate
 
 %default covering
@@ -30,15 +25,15 @@ import SigmaGate
 
 ||| The latent barrier: coefficients >= 128 belong to the LatentState (Dark Energy).
 ||| Evaluates from the Foldable dimension of the Cosmic Partition Dark Energy pool.
-latentBarrier : Integer
-latentBarrier = cast darkEnergyStates
+latentBarrier : Nat
+latentBarrier = darkEnergyStates
 
 ||| The capacity limit at which resonance shattering triggers.
 ||| This is NOT a magic number. It is formally derived from the Primorial
 ||| Particle Mapping bounding the topological resolution.
 ||| It natively evaluates to 137 (the Fine-Structure constant inverse).
-capacityLimit : Integer
-capacityLimit = cast (calculateGridLimit constructPrimorialGrid)
+capacityLimit : Nat
+capacityLimit = calculateGridLimit constructPrimorialGrid
 
 -----------------------------------------------------------------------
 -- THE ADAPTIVE CYCLE RUNNER
@@ -69,7 +64,7 @@ sigmaGateAudit sub field =
   in netBoundaryFlow == 0 -- Proves the universe is a closed, conserved manifold
 
 public export
-runAdaptiveCycle : Integer         -- The capacityLimit (137)
+runAdaptiveCycle : Nat         -- The capacityLimit (137)
                 -> Metric          -- Gauge metric configuration (Blue/Red/Green)
                 -> Simplex.Core.Geometry        -- Target macro coordinate for Scale N+1 condensation
                 -> UniverseState   -- Current generation state
@@ -125,7 +120,7 @@ runEpochs (S k) state =
 ||| A strictly linear version of stepUniverseLocalized.
 ||| Consumes the linear universe state in-place, steps its multisets, and returns the next dynamic state.
 public export
-lstepUniverseLocalized : Integer
+lstepUniverseLocalized : Nat
                       -> Metric
                       -> (1 state : LUniverseState edges contents)
                       -> DynamicLUniverseState
@@ -141,7 +136,7 @@ lstepUniverseLocalized capacityLimit metric (MkLUniverseState substrate stateVec
 ||| Executes a fully verified in-place scale transition, collapsing the system's active
 ||| mass-energy to the macro-target coordinate upon triggering the chromogeometric or Goh horizon.
 public export
-lrunAdaptiveCycle : Integer
+lrunAdaptiveCycle : Nat
                  -> Metric
                  -> Simplex.Core.Geometry
                  -> (1 state : LUniverseState edges contents)
@@ -164,8 +159,3 @@ lrunAdaptiveCycle capacityLimit metric macroTarget (MkLUniverseState substrate s
           let postFieldL = buildLDep postFieldList
               postSubL = buildLDep postSubList
           in (postSubList ** postFieldList ** MkLUniverseState postSubL postFieldL)
-
-
-
-
-

@@ -5,11 +5,6 @@ import Scale.PythagoreanFixedPoint
 import Compound.Water
 import Evolution.Gate
 
-import Simplex.Core
-import Evolution.Gate
-import Compound.Water
-import Scale.PythagoreanFixedPoint
-
 import Math.Multiset
 import Math.IntPolynumber
 import Math.SpreadPolynumber
@@ -65,9 +60,9 @@ import Math.Chromogeometry
 ||| The N+2 ice direction: hydrogen bond + fixed point.
 ||| (7,7) + (4,3) = (11, 10)
 public export
-iceDirection : Pixel Integer
+iceDirection : Geometry
 iceDirection = MkPixel (hydrogenBondDirection.src + h1Position.src)
-                          (hydrogenBondDirection.tgt + h1Position.tgt)
+                       (hydrogenBondDirection.tgt + h1Position.tgt)
 
 ||| The N+2 direction is the self-addition of the fixed point.
 public export
@@ -88,14 +83,14 @@ iceFingerprint = fingerprint iceDirection
 ||| The Red quadrance at N+2: 21 = 3 × 7 = MatterGate × TimeGate.
 ||| This is the folding number — the product of structure and time.
 public export
-iceFoldingNumber : Integer
+iceFoldingNumber : BoxInt
 iceFoldingNumber = quadranceNL Red (MkPixel 0 0) iceDirection
 
 ||| The folding number factors into MatterGate × TimeGate.
 public export
 foldingIsMatterTimesTime : Bool
 foldingIsMatterTimesTime =
-  iceFoldingNumber == cast (degree MatterGate) * cast (degree TimeGate)
+  iceFoldingNumber == fromInteger (natToInteger (degree MatterGate) * natToInteger (degree TimeGate))
 
 -----------------------------------------------------------------------
 -- BLUE QUADRANCE = DECOHERENCE ONSET
@@ -106,13 +101,14 @@ foldingIsMatterTimesTime =
 ||| 17 = first prime BEYOND the gate hierarchy.
 ||| The product signals the onset of decoherence.
 public export
-iceBlueQuadrance : Integer
+iceBlueQuadrance : BoxInt
 iceBlueQuadrance = quadranceNL Blue (MkPixel 0 0) iceDirection
 
 ||| 221 = 13 × 17: ResonanceGate × first non-gate prime.
 public export
 blueIsResonanceTimesDecoherence : Bool
-blueIsResonanceTimesDecoherence = iceBlueQuadrance == 13 * 17
+blueIsResonanceTimesDecoherence =
+  iceBlueQuadrance == 221
 
 -----------------------------------------------------------------------
 -- EDGE QUADRANCE = WATER'S SIGNATURE PERSISTS
@@ -122,9 +118,9 @@ blueIsResonanceTimesDecoherence = iceBlueQuadrance == 13 * 17
 ||| Q = (11-7)² + (10-7)² = 4² + 3² = 25 = ChargeGate²
 ||| This is IDENTICAL to Water's bond quadrance.
 public export
-iceEdgeDirection : Pixel Integer
+iceEdgeDirection : Geometry
 iceEdgeDirection = MkPixel (iceDirection.src - hydrogenBondDirection.src)
-                              (iceDirection.tgt - hydrogenBondDirection.tgt)
+                           (iceDirection.tgt - hydrogenBondDirection.tgt)
 
 ||| The edge IS the water fixed point (4,3).
 public export
@@ -147,7 +143,7 @@ edgeQuadranceIsWater =
 ||| A(Q)_Blue = 196 — same as Water's A(Q)_Blue.
 ||| The chromogeometric signature is inherited across scales.
 public export
-iceArchimedes : Integer
+iceArchimedes : BoxInt
 iceArchimedes = archimedesNL Blue (MkPixel 0 0) hydrogenBondDirection iceDirection
 
 -----------------------------------------------------------------------
@@ -166,11 +162,11 @@ iceArchimedes = archimedesNL Blue (MkPixel 0 0) hydrogenBondDirection iceDirecti
 ||| are perfectly reciprocal.
 public export
 matterFoldsFromTime : Nat
-matterFoldsFromTime = cast (the Integer (div 21 (cast (degree TimeGate))))
+matterFoldsFromTime = Prelude.integerToNat (21 `div` natToInteger (degree TimeGate))
 
 public export
 timeFoldsFromMatter : Nat
-timeFoldsFromMatter = cast (the Integer (div 21 (cast (degree MatterGate))))
+timeFoldsFromMatter = Prelude.integerToNat (21 `div` natToInteger (degree MatterGate))
 
 ||| Matter folds from Time = MatterGate degree.
 public export
@@ -181,5 +177,3 @@ matterFoldsIsMatter = matterFoldsFromTime == degree MatterGate
 public export
 timeFoldsIsTime : Bool
 timeFoldsIsTime = timeFoldsFromMatter == degree TimeGate
-
-

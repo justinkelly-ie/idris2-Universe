@@ -97,7 +97,9 @@ Feynmanium = MkElement 137 (elementalState 137 (MkPixel 0 0)) Refl
 ||| contributes exactly 8 units of lag (the vacuum fluctuation quantum).
 public export
 vacuumQuantum : Integer
-vacuumQuantum = multiplicityAll (spreadPoly 2)
+vacuumQuantum =
+  let (MkUr val) = boxToInt (multiplicityAll (spreadPoly 2))
+  in val
 
 ||| Oxygen divides the dark energy pool (128 = 2^7) exactly.
 ||| 128 / 8 = 16 quanta.

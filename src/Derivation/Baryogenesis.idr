@@ -43,11 +43,11 @@ data BaryonGenesis : Type where
 ||| Evaluates the Epoch 2 partition by constructing the Primorial Grid
 ||| and measuring the actual pool sizes.
 public export
-evaluateEpoch2 : Multiset (Pixel Integer, IntPolynumber) -> BaryonGenesis
+evaluateEpoch2 : Vexel -> BaryonGenesis
 evaluateEpoch2 _ = 
   let grid = constructPrimorialGrid
-      de   = cast {to=Nat} (multiplicityAll (darkEnergy grid))
-      vm   = cast {to=Nat} (multiplicityAll (visibleMatter grid))
+      de   = Prelude.integerToNat (multiplicityAll (darkEnergy grid))
+      vm   = Prelude.integerToNat (multiplicityAll (visibleMatter grid))
   in MkBaryonGenesis de vm
 
 

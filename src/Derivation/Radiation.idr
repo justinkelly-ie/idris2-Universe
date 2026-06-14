@@ -6,6 +6,7 @@ import Math.IntPolynumber
 import Math.Chromogeometry
 import Symmetry.Photon
 import System.CosmicPartition
+import Math.BoxInt
 
 %default total
 
@@ -37,7 +38,9 @@ isZeroRemainder (MkRadiation m) =
   -- In pure radiation, every polynomial coefficient must resolve
   -- to a zero-sum across the symmetric lattice.
   -- We model this by verifying that the net multiplicity is balanced.
-  let totalAmplitude = foldl (\acc, ((_, amp), mult) => acc + (multiplicityAll amp * mult)) 0 (multisetToList m)
+  let totalAmplitude = foldl (\acc, ((_, amp), mult) =>
+        let (MkUr ampVal) = boxToInt (multiplicityAll amp)
+        in acc + (ampVal * mult)) 0 (multisetToList m)
   in totalAmplitude == 0
 
 ||| Calculates the total informational energy density (Möbius weight)
@@ -45,7 +48,7 @@ isZeroRemainder (MkRadiation m) =
 public export
 calculateEnergyDensity : Radiation -> Nat
 calculateEnergyDensity (MkRadiation m) =
-  cast (multiplicityAll m)
+  Prelude.integerToNat (multiplicityAll m)
 
 ||| Audits the Baryogenesis phase transition threshold.
 |||

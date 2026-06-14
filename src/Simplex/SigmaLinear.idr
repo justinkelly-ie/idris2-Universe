@@ -18,7 +18,7 @@ Edge = (Simplex.Core.Geometry, Simplex.Core.Geometry)
 ||| The purely type-verified Vertex Multiset (replaces LCell0 logic)
 public export
 0 LVexel : (contents : List (Simplex.Core.Geometry, Integer)) -> Type
-LVexel contents = LMultiset Simplex.Core.Geometry contents
+LVexel contents = LMultiset Integer Simplex.Core.Geometry contents
 
 ||| Legacy compatibility alias for LVexel.
 public export
@@ -28,7 +28,7 @@ LDepVexel = LVexel
 ||| The purely type-verified Edge Multiset (replaces runtime multiset edges)
 public export
 0 LSubstrate : (contents : List (Edge, Integer)) -> Type
-LSubstrate contents = LMultiset Edge contents
+LSubstrate contents = LMultiset Integer Edge contents
 
 ||| Legacy compatibility alias for LSubstrate.
 public export
@@ -75,8 +75,8 @@ applyBoundary (LAddM (src, tgt) count prev) =
 ||| the `nextContents` specification.
 public export
 stepUniverse : {0 contents : List (a, Integer)} -> 
-               (1 currentMesh : LMultiset a contents) -> 
-               LMultiset a (nextContents contents)
+               (1 currentMesh : LMultiset Integer a contents) -> 
+               LMultiset Integer a (nextContents contents)
 stepUniverse LEmptyM = LEmptyM
 stepUniverse (LAddM item count prev) = LAddM item (count + 1) (stepUniverse prev)
 
@@ -106,7 +106,7 @@ runBoundary (edges ** chain) = (computeBoundaryIndex edges ** applyBoundary chai
 ||| The Dynamic Universe Wrapper.
 public export
 0 DynamicUniverse : (a : Type) -> Type
-DynamicUniverse a = (c : List (a, Integer) ** LMultiset a c)
+DynamicUniverse a = (c : List (a, Integer) ** LMultiset Integer a c)
 
 ||| The Macroscopic Runtime Epoch.
 public export
@@ -124,7 +124,7 @@ data LUniverseState : (edges : List (Edge, Integer)) ->
                       (contents : List ((Simplex.Core.Geometry, Amplitude), Integer)) -> 
                       Type where
   MkLUniverseState : (1 substrate : LSubstrate edges) -> 
-                     (1 stateVector : LMultiset (Simplex.Core.Geometry, Amplitude) contents) -> 
+                     (1 stateVector : LMultiset Integer (Simplex.Core.Geometry, Amplitude) contents) -> 
                      LUniverseState edges contents
 
 ||| The Dynamic Linear Universe State.
@@ -141,7 +141,7 @@ public export
 sumLinearAmplitudes : List ((Simplex.Core.Geometry, Amplitude), Integer) -> Amplitude
 sumLinearAmplitudes [] = emptyIntPoly
 sumLinearAmplitudes (((_, poly), count) :: xs) = 
-  addIntPoly (scaleMultiset count poly) (sumLinearAmplitudes xs)
+  addIntPoly (scaleMultiset (fromInteger count) poly) (sumLinearAmplitudes xs)
 
 ||| Computes the type-level content index of a post-ascension Vexel.
 public export
@@ -158,8 +158,8 @@ computeAscendContents target contents =
 public export
 lascendScale : {0 contents : List ((Simplex.Core.Geometry, Amplitude), Integer)} -> 
                (target : Simplex.Core.Geometry) -> 
-               (1 state : LMultiset (Simplex.Core.Geometry, Amplitude) contents) -> 
-               LMultiset (Simplex.Core.Geometry, Amplitude) (computeAscendContents target contents)
+               (1 state : LMultiset Integer (Simplex.Core.Geometry, Amplitude) contents) -> 
+               LMultiset Integer (Simplex.Core.Geometry, Amplitude) (computeAscendContents target contents)
 lascendScale target state =
   let MkLUnboxResult frozen = lunboxLMultiset state
   in LAddM (target, sumLinearAmplitudes frozen) 1 LEmptyM

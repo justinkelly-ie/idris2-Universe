@@ -16,7 +16,7 @@ import Evolution.Transform
 
 ||| The capacity limit at which resonance shattering triggers.
 public export
-capacityLimit : Integer
+capacityLimit : Nat
 capacityLimit = 137
 
 ||| The modulo base for the n=13 resonance gate.
@@ -33,10 +33,10 @@ moduloBase = 13
 ||| geometry. The spread polynomial S_1 is the unit baryon — Z protons
 ||| means multiplicity Z. The resonance gate checks if Z > 137.
 public export
-elementalState : (z : Nat) -> Pixel Integer -> Multiset (Pixel Integer, IntPolynumber)
+elementalState : (z : Nat) -> Geometry -> Vexel
 elementalState z geom =
   let unitBaryon = spreadPoly 1
-  in fromList [((geom, unitBaryon), cast z)]
+  in fromList [((geom, unitBaryon), natToInteger z)]
 
 ||| Tests whether an element at atomic number Z survives the resonance gate.
 ||| If the total lag exceeds 137, the resonance gate shatters the state
@@ -61,5 +61,5 @@ public export
 record Element where
   constructor MkElement
   atomicNumber : Nat
-  stateVector  : Multiset (Pixel Integer, IntPolynumber)
+  stateVector  : Vexel
   stable       : isStableElement atomicNumber = True

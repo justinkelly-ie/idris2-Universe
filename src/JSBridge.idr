@@ -78,7 +78,7 @@ parseVexel s =
 
 runAdaptiveCycleBridge : String -> String -> String -> String -> String -> String
 runAdaptiveCycleBridge capacityLimitStr metricStr macroTargetStr substrateStr stateVectorStr =
-  let capLimit = parseInt capacityLimitStr
+  let capLimit = parseNat capacityLimitStr
       metricVal = parseInt metricStr
       metric = case metricVal of
                  1 => Red
@@ -95,7 +95,7 @@ runAdaptiveCycleBridge capacityLimitStr metricStr macroTargetStr substrateStr st
 
 stepUniverseLocalizedBridge : String -> String -> String -> String -> String
 stepUniverseLocalizedBridge capacityLimitStr metricStr substrateStr stateVectorStr =
-  let capLimit = parseInt capacityLimitStr
+  let capLimit = parseNat capacityLimitStr
       metricVal = parseInt metricStr
       metric = case metricVal of
                  1 => Red

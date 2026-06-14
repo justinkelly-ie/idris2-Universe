@@ -24,7 +24,7 @@ import Math.Multiset
 
 ||| Instantiates a Platonic Element as a CompositeState at a specific origin point.
 public export
-fromElement : Element -> Pixel Integer -> CompositeState
+fromElement : Element -> Geometry -> CompositeState
 fromElement elem origin = translateState origin (Compound.Element.Element.stateVector elem)
 
 -----------------------------------------------------------------------
@@ -40,5 +40,5 @@ calculateFoldingStructure metric state =
       -- The active nodes are the unique coordinates in the state multiset
       coords = map (fst . fst) (multisetToList state)
       nodeCount = length (nub coords)
-      degree = cast (abs num)
+      degree = Prelude.integerToNat (abs num)
   in calculateNaturalFolds nodeCount degree

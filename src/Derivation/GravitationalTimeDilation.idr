@@ -40,7 +40,7 @@ interface ExperiencesTimeDilation a where
 public export
 ExperiencesTimeDilation Vexel where
   calculateLeibnizLag pip =
-    let totalOccupancy = cast {to = Nat} (stateLag pip)
+    let totalOccupancy = Prelude.integerToNat (stateLag pip)
     in MkFraction totalOccupancy primordialGridStates
 
 ||| Time Dilation for the complete UniverseState.
@@ -57,7 +57,7 @@ public export
 ExperiencesTimeDilation UniverseState where
   calculateLeibnizLag state =
     let causalDensity  = substrateLag (substrate state)
-        stateOccupancy = cast {to = Nat} (stateLag (stateVector state))
+        stateOccupancy = Prelude.integerToNat (stateLag (stateVector state))
         totalComplexity = causalDensity + stateOccupancy
     in MkFraction totalComplexity primordialGridStates
 

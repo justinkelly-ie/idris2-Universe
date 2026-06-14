@@ -42,23 +42,23 @@ import Math.Chromogeometry
 -----------------------------------------------------------------------
 
 public export
-ch4_h1 : Pixel Integer
+ch4_h1 : Geometry
 ch4_h1 = MkPixel 4 3
 
 public export
-ch4_h2 : Pixel Integer
+ch4_h2 : Geometry
 ch4_h2 = MkPixel (-3) 4
 
 public export
-ch4_h3 : Pixel Integer
+ch4_h3 : Geometry
 ch4_h3 = MkPixel (-4) (-3)
 
 public export
-ch4_h4 : Pixel Integer
+ch4_h4 : Geometry
 ch4_h4 = MkPixel 3 (-4)
 
 public export
-cPosition : Pixel Integer
+cPosition : Geometry
 cPosition = MkPixel 0 0
 
 -----------------------------------------------------------------------
@@ -67,8 +67,14 @@ cPosition = MkPixel 0 0
 
 ||| All 4 bonds share the same Blue quadrance: 25 = ChargeGate²
 public export
-methaneBondQuadrance : Integer
+methaneBondQuadrance : BoxInt
 methaneBondQuadrance = quadranceNL Blue cPosition ch4_h1
+
+public export
+methaneBondQuadranceVal : Integer
+methaneBondQuadranceVal =
+  let (MkUr v) = boxToInt methaneBondQuadrance
+  in v
 
 ||| The H1-H2 bond angle is exactly 90 degrees (orthogonal) in the Blue metric.
 ||| Blue dot product: (4)(-3) + (3)(4) = -12 + 12 = 0
@@ -79,19 +85,19 @@ bondsBlueOrthogonal = isPerpendicularNL Blue ch4_h1 ch4_h2
 ||| The Red quadrance perfectly alternates between +7 and -7.
 ||| This is the TimeGate signature (+7) balancing itself dynamically.
 public export
-redSignatureH1 : Integer
+redSignatureH1 : BoxInt
 redSignatureH1 = quadranceNL Red cPosition ch4_h1 -- 16 - 9 = 7
 
 public export
-redSignatureH2 : Integer
+redSignatureH2 : BoxInt
 redSignatureH2 = quadranceNL Red cPosition ch4_h2 -- 9 - 16 = -7
 
 public export
-redSignatureH3 : Integer
+redSignatureH3 : BoxInt
 redSignatureH3 = quadranceNL Red cPosition ch4_h3 -- 16 - 9 = 7
 
 public export
-redSignatureH4 : Integer
+redSignatureH4 : BoxInt
 redSignatureH4 = quadranceNL Red cPosition ch4_h4 -- 9 - 16 = -7
 
 -----------------------------------------------------------------------
@@ -145,7 +151,7 @@ methaneBaryonicLagIs10 = Refl
 ||| "Complete" particle in the scale hierarchy where bond energy perfectly
 ||| squares the mass.
 public export
-methaneMassEnergyEquivalence : (Compound.Methane.methaneBondQuadrance * 4 = Compound.Methane.methaneBaryonicLag * Compound.Methane.methaneBaryonicLag)
+methaneMassEnergyEquivalence : (Compound.Methane.methaneBondQuadranceVal * 4 = Compound.Methane.methaneBaryonicLag * Compound.Methane.methaneBaryonicLag)
 methaneMassEnergyEquivalence = Refl
 
 -----------------------------------------------------------------------
@@ -161,7 +167,7 @@ record MethaneMolecule where
   1 hydrogen3  : HydrogenAtom
   1 hydrogen4  : HydrogenAtom
   1 carbonAtom : CarbonAtom
-  1 bonds      : Multiset (Pixel Integer, IntPolynumber)
+  1 bonds      : Vexel
 
 ||| Constructs a Methane molecule at the canonical geometry.
 public export

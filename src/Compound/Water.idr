@@ -7,13 +7,6 @@ import Compound.Element
 import Evolution.Gate
 import Compound.Oxygen
 
-import Simplex.Core
-import Compound.Hydrogen
-import Compound.Oxygen
-import Symmetry.Electron
-import Evolution.Gate
-import Compound.Element
-
 import Math.Multiset
 import Math.IntPolynumber
 import Math.SpreadPolynumber
@@ -77,17 +70,17 @@ import Math.Chromogeometry
 
 ||| Hydrogen 1 position on the grid: (BondGate, MatterGate) = (4, 3)
 public export
-h1Position : Pixel Integer
+h1Position : Geometry
 h1Position = MkPixel 4 3
 
 ||| Hydrogen 2 position on the grid: (MatterGate, BondGate) = (3, 4)
 public export
-h2Position : Pixel Integer
+h2Position : Geometry
 h2Position = MkPixel 3 4
 
 ||| Oxygen position: the origin
 public export
-oPosition : Pixel Integer
+oPosition : Geometry
 oPosition = MkPixel 0 0
 
 -----------------------------------------------------------------------
@@ -97,7 +90,7 @@ oPosition = MkPixel 0 0
 ||| The bond quadrance: Q(OH) = 4² + 3² = 25 = ChargeGate²
 ||| Both O-H bonds have identical quadrance (symmetric molecule).
 public export
-bondQuadrance : Integer
+bondQuadrance : BoxInt
 bondQuadrance = quadranceNL Blue oPosition h1Position
 
 ||| The bond spread at O (the "bond angle"):
@@ -106,13 +99,13 @@ bondQuadrance = quadranceNL Blue oPosition h1Position
 ||| Numerator = TimeGate²
 ||| Denominator = ChargeGate⁴
 public export
-bondSpread : (Integer, Integer)
+bondSpread : (BoxInt, BoxInt)
 bondSpread = spreadNL Blue oPosition h1Position h2Position
 
 ||| The inter-hydrogen quadrance: Q(H₁H₂) = (4-3)² + (3-4)² = 2
 ||| This is exactly the BackgroundGate degree.
 public export
-interHydrogenQuadrance : Integer
+interHydrogenQuadrance : BoxInt
 interHydrogenQuadrance = quadranceNL Blue h1Position h2Position
 
 ||| The O-H bonds are perpendicular in the Red metric.
@@ -130,7 +123,7 @@ bondsRedPerpendicular = isPerpendicularNL Red h1Position h2Position
 ||| The electron sits on the n=3 MatterGate, providing visible geometry.
 ||| Its state is the S_3 spread polynomial at the bond position.
 public export
-bondElectron : Pixel Integer -> Electron
+bondElectron : Geometry -> Electron
 bondElectron pos = MkElectron (fromList [((pos, spreadPoly 3), 1)])
 
 ||| The two bonding electrons in Water, one per O-H bond.
@@ -148,20 +141,20 @@ bondingElectrons = (bondElectron h1Position, bondElectron h2Position)
 ||| The Red quadrance of the electron IS the TimeGate degree.
 ||| The Green quadrance IS Oxygen's Z (8) times the MatterGate degree (3).
 public export
-electronRedQuadrance : Integer
+electronRedQuadrance : BoxInt
 electronRedQuadrance = quadranceNL Red oPosition h1Position
 
 ||| The Green quadrance of the electron in the bond.
 ||| Q_Green = 2·4·3 = 24 = 8 × 3 = Oxygen(Z) × MatterGate(n)
 public export
-electronGreenQuadrance : Integer
+electronGreenQuadrance : BoxInt
 electronGreenQuadrance = quadranceNL Green oPosition h1Position
 
 ||| The electron-to-electron spread between the two bonding electrons.
 ||| This measures the angular separation of the two electrons as seen
 ||| from the Oxygen nucleus.
 public export
-electronElectronSpread : (Integer, Integer)
+electronElectronSpread : (BoxInt, BoxInt)
 electronElectronSpread = spreadNL Blue oPosition h1Position h2Position
 
 -----------------------------------------------------------------------
@@ -176,7 +169,7 @@ record WaterMolecule where
   1 hydrogen1  : HydrogenAtom
   1 hydrogen2  : HydrogenAtom
   1 oxygenAtom : OxygenAtom
-  1 bonds      : Multiset (Pixel Integer, IntPolynumber)
+  1 bonds      : Vexel
 
 ||| Constructs a Water molecule at the canonical geometry.
 ||| H₁ at (4,3), H₂ at (3,4), O at origin.
@@ -209,5 +202,3 @@ waterBondCount = oxygenValence
 public export
 waterIsStable : Bool
 waterIsStable = isStableElement 10
-
-

@@ -40,7 +40,7 @@ CalculatesVacuumEnergy Vexel where
   predictCosmologicalConstant pip =
     let darkEnergyCount : Nat = darkEnergyStates
         gridLimit       : Nat = primordialGridStates
-        stateOccupancy  : Nat = cast (stateLag pip)
+        stateOccupancy  : Nat = Prelude.integerToNat (stateLag pip)
     in MkFraction darkEnergyCount (gridLimit * gridLimit + stateOccupancy)
 
 ||| For a full UniverseState, the substrate density also contributes to the
@@ -50,7 +50,7 @@ CalculatesVacuumEnergy UniverseState where
   predictCosmologicalConstant state =
     let darkEnergyCount : Nat = darkEnergyStates
         gridLimit       : Nat = primordialGridStates
-        stateOccupancy  : Nat = cast (stateLag (stateVector state))
+        stateOccupancy  : Nat = Prelude.integerToNat (stateLag (stateVector state))
         causalDensity   : Nat = substrateLag (substrate state)
     in MkFraction darkEnergyCount (gridLimit * gridLimit + stateOccupancy + causalDensity)
 

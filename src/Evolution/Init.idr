@@ -16,7 +16,7 @@ import Evolution.Cycle
 ||| It seeds the grid with foundational points (like the Water/H-Bond origin roots)
 ||| to jumpstart the relational clock loop safely at T=0.
 public export
-seedChromogeometricVacuum : (capacityLimit : Integer) -> UniverseState
+seedChromogeometricVacuum : (capacityLimit : Nat) -> UniverseState
 seedChromogeometricVacuum capacityLimit =
   let -- 1. Define the baseline primordial coordinate vertices (The Root Geometry)
       origin = MkPixel 0 0

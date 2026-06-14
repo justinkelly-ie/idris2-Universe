@@ -1,12 +1,7 @@
 module Symmetry.Photon
 
-import Evolution.State
-
-import Evolution.State
-
-import Math.Polynumber
+import Simplex.Core
 import Math.Chromogeometry
-import Math.SpreadPolynumber
 import Math.Fraction
 
 %default total
@@ -14,7 +9,7 @@ import Math.Fraction
 ||| A Photon in the CellState framework is defined not as a continuous wave,
 ||| but as an algebraic Null-Quadrance Operator on the Red (Relativistic) Metric.
 public export
-isPhotonPixel : Pixel Integer -> Bool
+isPhotonPixel : Geometry -> Bool
 isPhotonPixel p = quadranceNL Red (MkPixel 0 0) p == 0
 
 ||| Represents a validated Photon.
@@ -23,13 +18,13 @@ isPhotonPixel p = quadranceNL Red (MkPixel 0 0) p == 0
 public export
 record Photon where
   constructor MkPhoton
-  particle : Pixel Integer
+  particle : Geometry
   -- In a fully dependently typed theorem, we would include:
   -- 0 prf : isPhotonPixel particle = True
 
 ||| Safely instantiates a Photon if the coordinate meets the speed of light limit.
 public export
-createPhoton : Pixel Integer -> Maybe Photon
+createPhoton : Geometry -> Maybe Photon
 createPhoton p = 
   if isPhotonPixel p then Just (MkPhoton p) else Nothing
 
@@ -37,7 +32,7 @@ createPhoton p =
 ||| it possesses distinct non-zero quadrance in the Blue (Spatial) Metric.
 ||| This Blue Quadrance corresponds directly to its spatial energy / momentum.
 public export
-blueEnergy : Photon -> Integer
+blueEnergy : Photon -> BoxInt
 blueEnergy (MkPhoton p) = quadranceNL Blue (MkPixel 0 0) p
 
 ||| The Cross-Ratio Transformation Matrix (M_x) collapses a 2D null photon
@@ -46,7 +41,7 @@ blueEnergy (MkPhoton p) = quadranceNL Blue (MkPixel 0 0) p
 ||| (1 1) (x)   (2x)
 ||| (1 -1)(x) = (0 )
 public export
-absorbPhoton : Photon -> Pixel Integer
+absorbPhoton : Photon -> Geometry
 absorbPhoton (MkPhoton (MkPixel x y)) = MkPixel (x + y) (x - y)
 
 ||| Calculates the physical propagation speed of a state across the grid.
@@ -56,8 +51,11 @@ absorbPhoton (MkPhoton (MkPixel x y)) = MkPixel (x + y) (x - y)
 public export
 propagationSpeed : Photon -> Fraction
 propagationSpeed (MkPhoton (MkPixel space time)) =
-  let spaceNat = cast {to=Nat} (abs space)
-      timeNat = cast {to=Nat} (abs time)
+  let (MkUr spaceVal) = boxToInt space
+      (MkUr timeVal) = boxToInt time
+      spaceNat = Prelude.integerToNat (abs spaceVal)
+      timeNat = Prelude.integerToNat (abs timeVal)
   in MkFraction spaceNat timeNat
+
 
 

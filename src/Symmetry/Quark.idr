@@ -1,5 +1,6 @@
 module Symmetry.Quark
 
+import Simplex.Core
 import Math.Multiset
 import Math.IntPolynumber
 import Math.Pixel
@@ -15,7 +16,7 @@ import Data.Linear
 public export
 record Quark where
   constructor MkQuark
-  1 state : Multiset (Pixel Integer, IntPolynumber)
+  1 state : Vexel
 
 ||| Linearly duplicates a Quark.
 public export total
@@ -31,11 +32,12 @@ consumeQuark (MkQuark state) = consumeMultiset state
 
 ||| Linearly extracts the first active coordinate of a Quark while reconstructing it.
 public export total
-getQuarkCoord : (1 _ : Quark) -> LPair (Pixel Integer) Quark
+getQuarkCoord : (1 _ : Quark) -> LPair Geometry Quark
 getQuarkCoord (MkQuark state) =
   let (lst # state') = multisetToListL state
       coord = case lst of
                 [] => MkPixel 0 0
                 ((p, _) , _) :: _ => p
   in Builtin.(#) coord (MkQuark state')
+
 

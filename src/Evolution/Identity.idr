@@ -69,6 +69,4 @@ record PersistentIdentity (n : Nat) where
 public export
 enforceDecoherence : PersistentIdentity n -> Substrate -> Bool
 enforceDecoherence ident sub = 
-  substrateLag sub > 137
-
-
+  substrateLag sub > 137 --To Do remove hardcoded 137 and use the scale capacity

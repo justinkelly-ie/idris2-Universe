@@ -8,13 +8,15 @@ import Simplex.Twist
 import Evolution.State
 import Evolution.Transform
 import Evolution.Gate
+import System.CosmicPartition
+import Math.BoxInt
 
 
 ||| List-based helper for generateLocalSpreadPoly.
 public export
 generateLocalSpreadPolyList : Metric
                            -> List ((Geometry, Geometry), Integer)
-                           -> Pixel Integer
+                           -> Geometry
                            -> IntPolynumber
 generateLocalSpreadPolyList metric edges currentGeom =
   let _ = metric  -- Blue used unconditionally below; metric arg retained for API compatibility
@@ -29,7 +31,9 @@ generateLocalSpreadPolyList metric edges currentGeom =
       -- 2. Compute localised rational spread fractions (Blue unconditional)
       localFractions = map (\(p1, p2, p3, mult) =>
                          let (num, den) = spreadNL Blue p1 p2 p3
-                         in (num * mult, den)
+                             (MkUr numVal) = boxToInt num
+                             (MkUr denVal) = boxToInt den
+                         in (numVal * mult, denVal)
                        ) localTriads
 
       -- 3. Consolidate into a GCD-reduced total local twist integer
@@ -49,7 +53,7 @@ generateLocalSpreadPolyList metric edges currentGeom =
 public export
 generateLocalSpreadPoly : Metric
                        -> Substrate
-                       -> Pixel Integer
+                       -> Geometry
                        -> IntPolynumber
 generateLocalSpreadPoly metric substrate currentGeom =
   generateLocalSpreadPolyList metric (multisetToList substrate) currentGeom
@@ -62,7 +66,7 @@ deformSubstrateList : List ((Geometry, Geometry), Integer)
                     -> List ((Geometry, Geometry), Integer)
 deformSubstrateList edges states =
   let -- Helper to extract the mass-energy count at a given coordinate
-      getEnergy : Pixel Integer -> Integer
+      getEnergy : Geometry -> Integer
       getEnergy geom =
         case filter (\((g, _), _) => g == geom) states of
           ((_, c) :: _) => c
@@ -87,7 +91,7 @@ deformSubstrate substrate stateVector =
 
 ||| List-based step of the universe generation.
 public export
-stepUniverseList : Integer
+stepUniverseList : Nat
                  -> Metric
                  -> List ((Geometry, Geometry), Integer)
                  -> List ((Geometry, Amplitude), Integer)
@@ -95,13 +99,13 @@ stepUniverseList : Integer
 stepUniverseList capacityLimit metric subList stateList =
   let evolvedStates = map (\((geom, amp), stateCount) => 
                             let localPropagator = generateLocalSpreadPolyList metric subList geom
-                                fusedAmplitude  = scaleMultiset stateCount (mulIntPoly amp localPropagator)
+                                fusedAmplitude  = scaleMultiset (fromInteger stateCount) (mulIntPoly amp localPropagator)
                             in ((geom, fusedAmplitude), stateCount))
                           stateList
       
       processedItems = concatMap (\((geom, amp), stateCount) =>
-                                   let (latentSpace, visibleSpace) = partitionLogic 128 geom amp
-                                       stabilizedVisible = evaluateResonance capacityLimit 13 geom visibleSpace
+                                   let (latentSpace, visibleSpace) = partitionLogic darkEnergyStates geom amp
+                                       stabilizedVisible = evaluateResonance capacityLimit (natToInteger (degree ResonanceGate)) geom visibleSpace
                                    in multisetToList (addMultiset latentSpace stabilizedVisible))
                                  evolvedStates
                                   
@@ -113,7 +117,7 @@ stepUniverseList capacityLimit metric subList stateList =
 ||| Drives a complete generational evolution step where time-propagation is 
 ||| entirely localized and driven by the restored SpreadPolynumber bridge.
 public export
-stepUniverseLocalized : Integer
+stepUniverseLocalized : Nat
                      -> Metric
                      -> Substrate
                      -> Vexel

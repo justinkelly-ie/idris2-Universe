@@ -28,7 +28,7 @@ record DecayProducts where
 ||| forces a decomposition. The prime polynomial n=11 generates coefficients > 128,
 ||| triggering this limit organically.
 public export
-isDenominatorOverflow : Nat -> Multiset (Pixel Integer, IntPolynumber) -> Bool
+isDenominatorOverflow : Nat -> Vexel -> Bool
 isDenominatorOverflow dim _ = dim == 11
 
 ||| Evaluates an arithmetic denominator overflow at prime degree n=11.
@@ -36,5 +36,5 @@ isDenominatorOverflow dim _ = dim == 11
 ||| A particle at generation 11 will be decayed into these three lower-energy
 ||| states to conserve structural integrity on the grid.
 public export
-triggerDecay : (1 particle : Multiset (Pixel Integer, IntPolynumber)) -> LPair Bool (Multiset (Pixel Integer, IntPolynumber))
+triggerDecay : (1 particle : Vexel) -> LPair Bool Vexel
 triggerDecay particle = Builtin.(#) False particle

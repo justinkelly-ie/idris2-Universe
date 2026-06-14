@@ -11,7 +11,7 @@ import Math.Multiset
 ||| Recursively builds a Linear Multiset (LMultiset) from a standard runtime list.
 ||| This is the magic step that elevates runtime data into the type signature!
 public export
-buildLDep : (c : List (a, Integer)) -> LMultiset a c
+buildLDep : (c : List (a, Integer)) -> LMultiset Integer a c
 buildLDep [] = LEmptyM
 buildLDep ((item, count) :: rest) = LAddM item count (buildLDep rest)
 

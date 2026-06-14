@@ -190,8 +190,8 @@ selectGate n =
 public export
 runningCoupling : Nat -> FundamentalGate -> Nat
 runningCoupling k gate =
-  let n = cast {to=Integer} k + 1
-      d = cast {to=Integer} (degree gate)
+  let n = natToInteger k + 1
+      d = natToInteger (degree gate)
   in if d <= 1 then Z else go n d Z (k + 1)
   where
     go : Integer -> Integer -> Nat -> Nat -> Nat

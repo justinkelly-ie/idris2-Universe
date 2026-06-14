@@ -51,24 +51,25 @@ interface ExertsExpansivePressure a where
 public export
 ExertsExpansivePressure Vexel where
   calculateExpansivePressure pip =
-    let occupancy = cast {to = Nat} (stateLag pip)
+    let occupancy = Prelude.integerToNat (stateLag pip)
     in MkSpread (MkFraction (occupancy * darkEnergyStates) (primordialGridStates * primordialGridStates))
 
 ||| Expansive pressure for a full UniverseState.
 public export
 ExertsExpansivePressure UniverseState where
   calculateExpansivePressure state =
-    let occupancy   = cast {to = Nat} (stateLag (stateVector state))
+    let occupancy   = Prelude.integerToNat (stateLag (stateVector state))
         causalDepth = substrateLag (substrate state)
     in MkSpread (MkFraction ((occupancy + causalDepth) * darkEnergyStates) (primordialGridStates * primordialGridStates))
 
 ||| Maps a spatial dilation function over the Geometry coordinates of a Vexel.
-||| Because Multiset is an O(N) array, we can stretch the entire universe
-||| geometry without triggering combinatorial evaluation trees.
+||| Operates directly on BoxInt — Dirac cancellation handles Pos/Neg annihilation
+||| natively without projecting to Integer.
 public export
-dilateSpace : (Integer -> Integer) -> Vexel -> Vexel
+dilateSpace : (BoxInt -> BoxInt) -> Vexel -> Vexel
 dilateSpace f pip =
-  fromList (map (\((MkPixel s t, amp), count) => ((MkPixel (f s) (f t), amp), count)) (multisetToList pip))
+  fromList (map (\((MkPixel s t, amp), count) =>
+                    ((MkPixel (f s) (f t), amp), count)) (multisetToList pip))
 
 ||| Applies the physical outward pressure to the underlying FibreBundle,
 ||| physically moving the coordinates apart (simulating Cosmic Expansion).
@@ -76,6 +77,7 @@ public export
 applyDarkEnergyExpansion : Vexel -> Spread -> Vexel
 applyDarkEnergyExpansion pip pressure =
   let scale = fractionDivNat pressure.value.numerator (pressure.value.denominator * primordialGridStates) + 1
-  in dilateSpace (\x => x * (cast {to=Integer} scale)) pip
+      scaleFactor : BoxInt = fromInteger (natToInteger scale)
+  in dilateSpace (\x => x * scaleFactor) pip
 
 

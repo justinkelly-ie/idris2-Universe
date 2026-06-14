@@ -4,11 +4,12 @@ import Simplex.Core
 import Math.Multiset
 import Math.Pixel
 import Data.List
+import Math.BoxInt
 
 ||| A Maxel operator acting as a discrete transition matrix over Pixel coordinates
 public export
 0 MaxelOperator : Type
-MaxelOperator = Multiset (Geometry, Geometry)
+MaxelOperator = Multiset Integer (Geometry, Geometry)
 
 ||| Enforces that an operator preserves total system energy/tally (Isometry constraint)
 public export
@@ -39,7 +40,7 @@ applyGaugeMaxel op state =
       applyNode ((geom, amp), count) =
         case filter (\((src, _), _) => src == geom) opList of
           (((src, tgt), weight) :: _) => 
-            [((tgt, scaleMultiset weight amp), count)]
+            [((tgt, scaleMultiset (intToBoxInt weight) amp), count)]
           [] => 
             [((geom, amp), count)]
             

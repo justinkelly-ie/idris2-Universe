@@ -4,6 +4,8 @@ import public Math.Multiset
 import public Math.IntPolynumber
 import public Math.Chromogeometry
 import public Math.Pixel
+import public Math.BoxInt
+import public Math.Interfaces
 import Data.List
 
 %default total
@@ -13,7 +15,7 @@ import Data.List
 --
 -- Every concept in this engine is built from two nested structures:
 --
---   Geometry  = Pixel Integer   (a 2-component chromogeometric coordinate)
+--   Geometry  = Pixel BoxInt    (a 2-component chromogeometric coordinate)
 --   Amplitude = IntPolynumber     (a polynomial of integer coefficients)
 --
 -----------------------------------------------------------------------
@@ -26,7 +28,7 @@ import Data.List
 |||
 public export
 0 Geometry : Type
-Geometry = Pixel Integer
+Geometry = Pixel BoxInt
 
 -----------------------------------------------------------------------
 -- 2. AMPLITUDE (The Quantum State Value)
@@ -61,7 +63,7 @@ emptyAmplitude = ZeroM
 ||| Spacetime relations are literally a multiset of pixel-to-pixel edges.
 public export
 0 Substrate : Type
-Substrate = Multiset (Geometry, Geometry)
+Substrate = Multiset Integer (Geometry, Geometry)
 
 -----------------------------------------------------------------------
 -- 4. SPARSE MAXEL (The Quantum State Vector)
@@ -71,7 +73,7 @@ Substrate = Multiset (Geometry, Geometry)
 ||| A state is literally a multiset of pixel-amplitude pairs.
 public export
 0 Vexel : Type
-Vexel = Multiset (Geometry, Amplitude)
+Vexel = Multiset Integer (Geometry, Amplitude)
 
 -----------------------------------------------------------------------
 -- 5. UNIVERSE STATE (The Total Cosmological Configuration)
@@ -96,7 +98,7 @@ record UniverseState where
 |||
 public export
 substrateLag : Substrate -> Nat
-substrateLag sub = cast (multiplicityAll sub)
+substrateLag sub = Prelude.integerToNat (multiplicityAll sub)
 
 ||| Merge two Substrate causal graphs (native multiset union).
 |||
@@ -184,17 +186,20 @@ join sep [] = ""
 join sep [x] = x
 join sep (x :: xs) = x ++ sep ++ join sep xs
 
-||| Serializes a Geometry (Pixel Integer) to JSON.
+||| Serializes a Geometry (Pixel BoxInt) to JSON.
 public export
 serializeGeometry : Geometry -> String
 serializeGeometry (MkPixel s t) =
-  "{\"src\":" ++ show s ++ ",\"tgt\":" ++ show t ++ "}"
+  let (MkUr sVal) = boxToInt s
+      (MkUr tVal) = boxToInt t
+  in "{\"src\":" ++ show sVal ++ ",\"tgt\":" ++ show tVal ++ "}"
 
 ||| Serializes a polynomial term to JSON.
 public export
-serializeTerm : ((Nat, Nat), Integer) -> String
+serializeTerm : ((Nat, Nat), BoxInt) -> String
 serializeTerm ((alpha, beta), count) =
-  "{\"alpha\":" ++ show alpha ++ ",\"beta\":" ++ show beta ++ ",\"count\":" ++ show count ++ "}"
+  let (MkUr countVal) = boxToInt count
+  in "{\"alpha\":" ++ show alpha ++ ",\"beta\":" ++ show beta ++ ",\"count\":" ++ show countVal ++ "}"
 
 ||| Serializes an Amplitude (IntPolynumber) to JSON.
 public export

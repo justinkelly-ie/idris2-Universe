@@ -36,16 +36,16 @@ record DimensionFreeze where
 ||| Evaluates Epoch 3 by deriving the spatial dimensionality from the
 ||| visible matter pool and checking the holographic condition.
 public export
-evaluateEpoch3 : Multiset (Pixel Integer, IntPolynumber) -> DimensionFreeze
+evaluateEpoch3 : Vexel -> DimensionFreeze
 evaluateEpoch3 _ = 
   let grid = constructPrimorialGrid
-      vmCount = cast {to=Integer} (multiplicityAll (visibleMatter grid))
-      deCount = cast {to=Integer} (multiplicityAll (darkEnergy grid))
+      vmCount = multiplicityAll (visibleMatter grid)
+      deCount = multiplicityAll (darkEnergy grid)
       -- 27 = 3^3 → 3 spatial dimensions
       dims = intCubeRoot vmCount
       -- Holographic if dark energy lives in 2D (power of 2)
       holographic = isPowerOf2 deCount
-  in MkDimensionFreeze (cast dims) holographic
+  in MkDimensionFreeze (Prelude.integerToNat dims) holographic
   where
     intCubeRoot : Integer -> Integer
     intCubeRoot n = assert_total $ go 1

@@ -48,10 +48,10 @@ import Math.Chromogeometry
 
 ||| The position at scale k.
 public export
-scalePosition : Nat -> Pixel Integer
+scalePosition : Nat -> Geometry
 scalePosition k =
-  let n = cast {to=Integer} k + 1
-  in MkPixel (4 * n) (3 * n)
+  let n = natToInteger k + 1
+  in MkPixel (fromInteger (4 * n)) (fromInteger (3 * n))
 
 ||| The fingerprint at scale k.
 public export
@@ -65,26 +65,28 @@ scaleFingerprint k = fingerprint (scalePosition k)
 ||| Blue quadrance at scale k = 25 × (k+1)²
 public export
 blueAtScale : Nat -> Integer
-blueAtScale k = let n = cast {to=Integer} k + 1 in 25 * n * n
+blueAtScale k = let n = natToInteger k + 1 in 25 * n * n
 
 ||| Red quadrance at scale k = 7 × (k+1)²
 public export
 redAtScale : Nat -> Integer
-redAtScale k = let n = cast {to=Integer} k + 1 in 7 * n * n
+redAtScale k = let n = natToInteger k + 1 in 7 * n * n
 
 ||| Green quadrance at scale k = 24 × (k+1)²
 public export
 greenAtScale : Nat -> Integer
-greenAtScale k = let n = cast {to=Integer} k + 1 in 24 * n * n
+greenAtScale k = let n = natToInteger k + 1 in 24 * n * n
 
 ||| The gate fingerprint is invariant: Blue/n² = 25, Red/n² = 7, Green/n² = 24.
 public export
 fingerprintInvariant : Nat -> Bool
 fingerprintInvariant k =
   let fp = scaleFingerprint k
-      n = cast {to=Integer} k + 1
+      n = natToInteger k + 1
       nSq = n * n
-  in fp.blueQ == 25 * nSq && fp.redQ == 7 * nSq && fp.greenQ == 24 * nSq
+  in fp.blueQ  == fromInteger (25 * nSq)
+  && fp.redQ   == fromInteger (7 * nSq)
+  && fp.greenQ == fromInteger (24 * nSq)
 
 -----------------------------------------------------------------------
 -- GATE PURITY
@@ -107,7 +109,7 @@ isGatePure n =
 ||| a prime beyond the gate hierarchy.
 public export
 isCoherentGeneration : Nat -> Bool
-isCoherentGeneration k = isGatePure (cast k + 1)
+isCoherentGeneration k = isGatePure (natToInteger k + 1)
 
 -----------------------------------------------------------------------
 -- THE 38-CYCLE
@@ -126,7 +128,7 @@ observerEpoch = 38
 ||| The Eddington generation number: 39 = 3 × 13 = MatterGate × ResonanceGate.
 public export
 eddingtonGeneration : Integer
-eddingtonGeneration = cast observerEpoch + 1
+eddingtonGeneration = natToInteger observerEpoch + 1
 
 ||| The Eddington cycle is gate-pure.
 public export
@@ -137,7 +139,7 @@ eddingtonIsCoherent = isCoherentGeneration observerEpoch
 public export
 eddingtonIsMatterTimesResonance : Bool
 eddingtonIsMatterTimesResonance =
-  eddingtonGeneration == cast (degree MatterGate) * cast (degree ResonanceGate)
+  eddingtonGeneration == natToInteger (degree MatterGate) * natToInteger (degree ResonanceGate)
 
 ||| The number of gate-pure scales in the full 137-grid [0..136].
 public export

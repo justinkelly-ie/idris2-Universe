@@ -51,9 +51,9 @@ record CosmologicalScale where
 
 ||| Evaluates the scale of an Epoch without physically consuming it.
 public export
-evaluateScale : Nat -> Multiset (Pixel Integer, IntPolynumber) -> CosmologicalScale
+evaluateScale : Nat -> Vexel -> CosmologicalScale
 evaluateScale n _ = 
-  let dynamicGridLimit = cast {to=Integer} (calculateGridLimit constructPrimorialGrid)
+  let dynamicGridLimit = natToInteger (calculateGridLimit constructPrimorialGrid)
   in MkCosmologicalScale n (dynamicGridLimit ^ n)
 
 ||| A static check that Epoch 38 yields the empirical Eddington limit.

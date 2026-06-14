@@ -1,5 +1,6 @@
 module Symmetry.Meson
 
+import Simplex.Core
 import Symmetry.Quark
 import Invariant.ColorConfinement
 
@@ -24,21 +25,17 @@ record Meson where
 ||| Extracts the parallel dyad geometry between a Quark and AntiQuark.
 ||| Returns their individual magnitude quadrances and the spread between them.
 public export
-extractMesonGeometry : (1 _ : Meson) -> LPair (Integer, Integer, Integer) Meson
+extractMesonGeometry : (1 _ : Meson) -> LPair (BoxInt, BoxInt, BoxInt) Meson
 extractMesonGeometry (MkMeson q1 q2) =
-  let (q1a # q1b) = dupQuark q1
-      (q2a # q2b) = dupQuark q2
-      (p1 # q1c) = getQuarkCoord q1a
-      (p2 # q2c) = getQuarkCoord q2a
-      () = consumeQuark q1c
-      () = consumeQuark q2c
+  let (p1 # q1') = getQuarkCoord q1
+      (p2 # q2') = getQuarkCoord q2
       (MkPixel x1 y1) = p1
       (MkPixel x2 y2) = p2
       q1_val = x1*x1 + y1*y1
       q2_val = x2*x2 + y2*y2
       cross = x1*y2 - x2*y1
       s12_num = cross * cross
-  in Builtin.(#) (q1_val, q2_val, s12_num) (MkMeson q1b q2b)
+  in Builtin.(#) (q1_val, q2_val, s12_num) (MkMeson q1' q2')
 
 ||| Mesons explicitly implement Color Confinement.
 ||| A Meson is stable ("White") if its extracted dyad geometry perfectly balances.
@@ -49,5 +46,6 @@ implementation ColorConfined Meson where
         (q1, q2, s12_num) = geom
         stable = (q1 >= 0) && (q2 >= 0) && (s12_num >= 0)
     in Builtin.(#) stable meson'
+
 
 

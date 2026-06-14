@@ -7,13 +7,6 @@ import Evolution.Gate
 import Compound.Oxygen
 import Evolution.Identity
 
-import Simplex.Core
-import Evolution.Gate
-import Evolution.Identity
-import Compound.Water
-import Compound.Oxygen
-import System.PeriodicTable
-
 import Math.Multiset
 import Math.IntPolynumber
 import Math.SpreadPolynumber
@@ -50,38 +43,6 @@ import Math.Chromogeometry
 |||   Blue:   4² + 3² = 25 = 5²   → ChargeGate²    (interaction strength)
 |||   Red:    4² - 3² = 7          → TimeGate        (causal structure)
 |||   Green:  2·4·3   = 24 = 8×3  → Oxygen × Matter (energy × structure)
-|||
-||| The coordinate that describes the bond also describes the gates
-||| that create the bond. The snake eats its tail.
-|||
-||| Scale Transition (N → N+1)
-|||
-||| This self-referential encoding is the MECHANISM of scale transition:
-|||
-|||   Scale N (Elemental):
-|||     Gates generate the (4,3) fixed point → Water molecule forms.
-|||     The electron at (4,3) IS the bond. Particle = Interaction.
-|||
-|||   Scale N+1 (Molecular):
-|||     Water molecules become the NODES of a higher substrate.
-|||     The bonds between water molecules (hydrogen bonds) create
-|||     a NEW grid. The question: does this new grid have its own
-|||     Pythagorean fixed point?
-|||
-|||   If yes → another scale transition. If no → decoherence.
-|||
-||| Water's Identity
-|||
-||| Water's [J,J] diagonal — its PersistentIdentity — IS the (4,3) coordinate.
-||| What makes water WATER across all state transitions (ice, liquid, vapour)
-||| is not its temperature or phase but its GEOMETRY: the fact that (4,3)
-||| reads every gate from every metric. The identity persists because the
-||| fixed point is metric-invariant.
-|||
-||| This is why water is the universal solvent, the basis of biology,
-||| and the mediator of all known chemistry: its identity IS the gate
-||| hierarchy. Dissolving something in water means embedding it into
-||| the self-referential fixed point of the grid.
 
 -----------------------------------------------------------------------
 -- THE FIXED POINT
@@ -94,17 +55,17 @@ public export
 record PythagoreanFixedPoint where
   constructor MkFixedPoint
   ||| The coordinate
-  point : Pixel Integer
+  point : Geometry
   ||| Blue quadrance (Euclidean): a² + b²
-  blueQ : Integer
+  blueQ : BoxInt
   ||| Red quadrance (Minkowski): a² - b²
-  redQ  : Integer
+  redQ  : BoxInt
   ||| Green quadrance (Product): 2ab
-  greenQ : Integer
+  greenQ : BoxInt
 
 ||| Computes the full chromogeometric fingerprint of a grid coordinate.
 public export
-fingerprint : Pixel Integer -> PythagoreanFixedPoint
+fingerprint : Geometry -> PythagoreanFixedPoint
 fingerprint p = MkFixedPoint p (quadranceNL Blue (MkPixel 0 0) p) (quadranceNL Red (MkPixel 0 0) p) (quadranceNL Green (MkPixel 0 0) p)
 
 ||| The Water fixed point: (4, 3)
@@ -144,9 +105,12 @@ factorsIntoGates n =
 public export
 isFixedPoint : PythagoreanFixedPoint -> Bool
 isFixedPoint fp =
-  isGateDegreeSquared fp.blueQ &&      -- Blue = gate²
-  isGateDegree fp.redQ &&              -- Red = gate degree
-  factorsIntoGates fp.greenQ           -- Green = product of gates
+  let (MkUr bVal) = boxToInt fp.blueQ
+      (MkUr rVal) = boxToInt fp.redQ
+      (MkUr gVal) = boxToInt fp.greenQ
+  in isGateDegreeSquared bVal &&
+     isGateDegree rVal &&
+     factorsIntoGates gVal
 
 ||| Water IS a Pythagorean Fixed Point.
 public export
@@ -167,10 +131,9 @@ waterIsFixedPoint = isFixedPoint waterFixedPoint
 ||| The hydrogen bond direction at N+1 is the DIFFERENCE between
 ||| two water fixed points, rotated by the BondGate.
 public export
-hydrogenBondDirection : Pixel Integer
+hydrogenBondDirection : Geometry
 hydrogenBondDirection = MkPixel (h1Position.src + h2Position.src)
-                                   (h1Position.tgt + h2Position.tgt)
--- = (4+3, 3+4) = (7, 7) — the TimeGate diagonal!
+                                (h1Position.tgt + h2Position.tgt)
 
 ||| The N+1 hydrogen bond fingerprint.
 public export
@@ -187,7 +150,8 @@ hydrogenBondFingerprint = fingerprint hydrogenBondDirection
 ||| The N+1 bond IS the [J,J] diagonal of the next scale.
 public export
 hydrogenBondIsIdentity : Bool
-hydrogenBondIsIdentity = (fingerprint hydrogenBondDirection).redQ == 0
+hydrogenBondIsIdentity =
+  (fingerprint hydrogenBondDirection).redQ == 0
 
 ||| The hydrogen bond is isotropic: Blue = Green.
 ||| This means the Euclidean and product metrics agree —
@@ -212,14 +176,12 @@ hydrogenBondIsIsotropic =
 ||| The hydrogen bonds fluctuate because (7,7) is a null vector — 
 ||| it can form and dissolve without violating the structural lock.
 public export
-waterIdentityCoord : Pixel Integer
+waterIdentityCoord : Geometry
 waterIdentityCoord = h1Position
 
 ||| Water's identity is the coordinate where the self-referential
 ||| encoding lives. The identity persists through all phase transitions
 ||| because the fixed point is metric-invariant.
 public export
-waterIdentityQuadrance : Integer
+waterIdentityQuadrance : BoxInt
 waterIdentityQuadrance = quadranceNL Blue (MkPixel 0 0) waterIdentityCoord
-
-

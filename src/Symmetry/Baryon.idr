@@ -1,5 +1,6 @@
 module Symmetry.Baryon
 
+import Simplex.Core
 import Symmetry.Quark
 import Invariant.ColorConfinement
 
@@ -22,19 +23,13 @@ record Baryon where
 
 
 ||| Extracts Quadrances (Q) and Spreads (s) from a Baryon triad.
-||| Re-implemented for the Unified Multiset (Pixel Integer, IntPolynumber) Model.
+||| Re-implemented for the Unified Multiset (Pixel BoxInt, IntPolynumber) Model.
 public export
-extractBaryonGeometry : (1 _ : Baryon) -> LPair (Integer, Integer, Integer, Integer, Integer, Integer) Baryon
+extractBaryonGeometry : (1 _ : Baryon) -> LPair (BoxInt, BoxInt, BoxInt, BoxInt, BoxInt, BoxInt) Baryon
 extractBaryonGeometry (MkBaryon q1 q2 q3) =
-  let (q1a # q1b) = dupQuark q1
-      (q2a # q2b) = dupQuark q2
-      (q3a # q3b) = dupQuark q3
-      (p1 # q1c) = getQuarkCoord q1a
-      (p2 # q2c) = getQuarkCoord q2a
-      (p3 # q3c) = getQuarkCoord q3a
-      () = consumeQuark q1c
-      () = consumeQuark q2c
-      () = consumeQuark q3c
+  let (p1 # q1') = getQuarkCoord q1
+      (p2 # q2') = getQuarkCoord q2
+      (p3 # q3') = getQuarkCoord q3
       (MkPixel x1 y1) = p1
       (MkPixel x2 y2) = p2
       (MkPixel x3 y3) = p3
@@ -47,7 +42,7 @@ extractBaryonGeometry (MkBaryon q1 q2 q3) =
       s12_num = cross12 * cross12
       s23_num = cross23 * cross23
       s31_num = cross31 * cross31
-  in Builtin.(#) (q1_val, q2_val, q3_val, s12_num, s23_num, s31_num) (MkBaryon q1b q2b q3b)
+  in Builtin.(#) (q1_val, q2_val, q3_val, s12_num, s23_num, s31_num) (MkBaryon q1' q2' q3')
 
 ||| Baryons explicitly implement Color Confinement.
 ||| A Baryon is only stable ("White") if its extracted Triad Geometry
@@ -59,5 +54,6 @@ implementation ColorConfined Baryon where
         (q1, q2, q3, s12_num, s23_num, s31_num) = geom
         stable = q1 >= 0 && q2 >= 0 && q3 >= 0 && s12_num >= 0 && s23_num >= 0 && s31_num >= 0
     in Builtin.(#) stable baryon'
+
 
 

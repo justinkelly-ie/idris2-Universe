@@ -4,10 +4,6 @@ import Compound.Element
 import Simplex.Core
 import Symmetry.Electron
 
-import Simplex.Core
-import Symmetry.Electron
-import Compound.Element
-
 import Math.Multiset
 import Math.IntPolynumber
 import Math.SpreadPolynumber
@@ -33,14 +29,14 @@ public export
 record HydrogenAtom where
   constructor MkHydrogen
   ||| The proton: unit baryonic state (Z=1)
-  1 proton   : Multiset (Pixel Integer, IntPolynumber)
+  1 proton   : Vexel
   ||| The electron: simplest stable knot on the MatterGate
-  1 electron : Multiset (Pixel Integer, IntPolynumber)
+  1 electron : Vexel
 
 ||| Constructs a Hydrogen atom from the pipeline.
 ||| The proton is Z=1 elemental state, the electron is S_3 (MatterGate).
 public export
-hydrogen : Pixel Integer -> HydrogenAtom
+hydrogen : Geometry -> HydrogenAtom
 hydrogen geom =
   let protonState   = elementalState 1 geom
       electronState = fromList [((geom, spreadPoly 3), 1)]
@@ -49,9 +45,7 @@ hydrogen geom =
 ||| The total structural lag of a Hydrogen atom.
 ||| Proton lag (1) + electron lag (S_3 multiplicity).
 public export
-hydrogenLag : Pixel Integer -> Integer
+hydrogenLag : Geometry -> Integer
 hydrogenLag geom =
   let h = hydrogen geom
   in multiplicityAll h.proton + multiplicityAll h.electron
-
-

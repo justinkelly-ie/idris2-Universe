@@ -1,9 +1,6 @@
 module Symmetry.Neutrino
 
-import Evolution.State
-
-import Evolution.State
-
+import Simplex.Core
 import Math.Polynumber
 
 %default total
@@ -23,6 +20,7 @@ import Math.Polynumber
 public export
 record Neutrino where
   constructor MkNeutrino
-  1 state : Multiset (Pixel Integer, IntPolynumber)
+  1 state : Vexel
+
 
 

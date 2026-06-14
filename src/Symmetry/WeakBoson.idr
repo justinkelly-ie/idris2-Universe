@@ -1,9 +1,6 @@
 module Symmetry.WeakBoson
 
-import Evolution.State
-
-import Evolution.State
-
+import Simplex.Core
 import Math.Polynumber
 
 %default total
@@ -22,6 +19,7 @@ import Math.Polynumber
 public export
 record WeakBoson where
   constructor MkWeakBoson
-  1 state : Multiset (Pixel Integer, IntPolynumber)
+  1 state : Vexel
+
 
 

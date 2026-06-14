@@ -2,6 +2,7 @@ module Symmetry.Goh
 
 import Math.IntPolynumber
 import Math.SpreadPolynumber
+import Math.BoxInt
 import Data.List
 
 ||| Returns True if the set of primitive factors changes structural degree composition
