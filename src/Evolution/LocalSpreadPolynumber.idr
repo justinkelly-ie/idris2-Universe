@@ -1,4 +1,4 @@
-module Evolution.SpreadPolynumber
+module Evolution.LocalSpreadPolynumber
 
 import Math.Multiset
 import Math.IntPolynumber

@@ -6,7 +6,7 @@ import Math.Multiset
 import Math.IntPolynumber
 import Math.Chromogeometry
 import Simplex.Core
-import Evolution.SpreadPolynumber
+import Evolution.LocalSpreadPolynumber
 import Evolution.Cycle
 import Evolution.State
 import Data.List1

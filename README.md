@@ -38,7 +38,7 @@ src/
 ├── Evolution/            ← Universal engine — prime spread polynomial gates
 │   ├── Gate.idr              n=2,3,4,5,7,11,13 adaptive cycle phases
 │   ├── Cycle.idr
-│   ├── SpreadPolynumber.idr
+│   ├── LocalSpreadPolynumber.idr
 │   ├── Transform.idr
 │   └── Clock.idr, Identity.idr, Init.idr, State.idr
 │

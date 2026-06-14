@@ -4,7 +4,7 @@ import Evolution.Clock
 import Evolution.Gate
 import Evolution.Transform
 import Evolution.State
-import Evolution.SpreadPolynumber
+import Evolution.LocalSpreadPolynumber
 
 import Simplex.Core
 import Simplex.SigmaLinear

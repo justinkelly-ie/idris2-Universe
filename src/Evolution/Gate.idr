@@ -175,7 +175,7 @@ cycleDegree = foldl (*) 1 (map degree adaptiveCycle)
 ||| Defaults to BackgroundGate (degree 2) for the vacuum / trivial case
 ||| where the local twist is too small to exceed any gate threshold.
 |||
-||| Used by Evolution.SpreadPolynumber.generateLocalSpreadPoly to
+||| Used by Evolution.LocalSpreadPolynumber.generateLocalSpreadPoly to
 ||| convert a chromogeometric local spread measurement into the canonical
 ||| S_n(s) spread polynomial for that phase of the Adaptive Cycle.
 public export
