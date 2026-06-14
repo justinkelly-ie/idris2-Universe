@@ -39,8 +39,8 @@ public export
 evaluateEpoch3 : Vexel -> DimensionFreeze
 evaluateEpoch3 _ = 
   let grid = constructPrimorialGrid
-      vmCount = multiplicityAll (visibleMatter grid)
-      deCount = multiplicityAll (darkEnergy grid)
+      vmCount = multiplicityAll (visibleMatter grid).fst
+      deCount = multiplicityAll (darkEnergy grid).fst
       -- 27 = 3^3 → 3 spatial dimensions
       dims = intCubeRoot vmCount
       -- Holographic if dark energy lives in 2D (power of 2)

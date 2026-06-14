@@ -115,7 +115,7 @@ wildbergerAntiderivative dfs =
 ||| A discrete path integral summing over all valid transition histories (Feynman analogue).
 ||| Runs N epochs, accumulating all intermediate field states as a superposed Multiset path sum.
 public export
-pathEnsemble : Nat -> UniverseState -> Vexel
+pathEnsemble : {0 totalLag : Integer} -> Nat -> UniverseState totalLag -> Vexel
 pathEnsemble Z state = stateVector state
 pathEnsemble (S k) state =
   let capLimit = calculateGridLimit constructPrimorialGrid

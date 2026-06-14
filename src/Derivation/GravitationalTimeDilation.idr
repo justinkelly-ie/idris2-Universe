@@ -54,7 +54,7 @@ ExperiencesTimeDilation Vexel where
 ||| This directly implements gravitational time dilation as a geometric effect:
 ||| massive regions accumulate more causal edges → higher lag → slower time.
 public export
-ExperiencesTimeDilation UniverseState where
+{totalLag : Integer} -> ExperiencesTimeDilation (UniverseState totalLag) where
   calculateLeibnizLag state =
     let causalDensity  = substrateLag (substrate state)
         stateOccupancy = Prelude.integerToNat (stateLag (stateVector state))

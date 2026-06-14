@@ -1,13 +1,12 @@
 module Derivation.CosmicEnergyBudget
 
 import Evolution.CosmicPartition
+import Simplex.Core
 
 import Math.Multiset
 import Math.IntPolynumber
 import Math.Polynumber
 import Math.Fraction
-
-import Evolution.CosmicPartition
 
 %default total
 
@@ -45,9 +44,9 @@ record MassEnergyBudget where
 public export
 calculateCosmicBudget : CosmicPartition -> MassEnergyBudget
 calculateCosmicBudget partition =
-  let visibleStates    : Nat = partitionSize (MkGeometry 3 Rigid) partition.visibleMatter
-      darkMatterStates : Nat = partitionSize (MkGeometry 1 (Foldable 55)) partition.darkMatter
-      darkEnergyStates : Nat = partitionSize (MkGeometry 2 (Foldable 128)) partition.darkEnergy
+  let visibleStates    : Nat = partitionSize (MkGeometry 3 Rigid) partition.visibleMatter.fst
+      darkMatterStates : Nat = partitionSize (MkGeometry 1 (Foldable 55)) partition.darkMatter.fst
+      darkEnergyStates : Nat = partitionSize (MkGeometry 2 (Foldable 128)) partition.darkEnergy.fst
       totalStates      : Nat = visibleStates + darkMatterStates + darkEnergyStates
       deRatio  = MkFraction darkEnergyStates  totalStates
       dmRatio  = MkFraction darkMatterStates  totalStates

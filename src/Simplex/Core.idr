@@ -75,6 +75,12 @@ public export
 0 Vexel : Type
 Vexel = Multiset Integer (Geometry, Amplitude)
 
+||| The total Leibniz Lag of a Vexel (sum of all entry multiplicities).
+|||
+public export
+stateLag : Vexel -> Integer
+stateLag m = multiplicityAll m
+
 -----------------------------------------------------------------------
 -- 5. UNIVERSE STATE (The Total Cosmological Configuration)
 -----------------------------------------------------------------------
@@ -83,12 +89,14 @@ Vexel = Multiset Integer (Geometry, Amplitude)
 ||| quantum state vector.
 |||
 public export
-record UniverseState where
+record UniverseState (0 totalLag : Integer) where
   constructor MkUniverseState
   ||| The directed causal relations (spacetime / poset / substrate).
   substrate    : Substrate
   ||| The quantum amplitude assignments (matter fields / state vector).
   stateVector  : Vexel
+  ||| Proof that the state vector's Leibniz Lag matches the totalLag invariant.
+  lagProof     : stateLag stateVector = totalLag
 
 -----------------------------------------------------------------------
 -- 6. SUBSTRATE UTILITIES
@@ -145,11 +153,7 @@ public export
 superposeStates : Vexel -> Vexel -> Vexel
 superposeStates = addMultiset
 
-||| The total Leibniz Lag of a Vexel (sum of all entry multiplicities).
-|||
-public export
-stateLag : Vexel -> Integer
-stateLag m = multiplicityAll m
+
 
 ||| Restriction of a Vexel to entries matching a specific Geometry.
 |||
@@ -237,8 +241,8 @@ serializeSubstrate sub =
 
 ||| Serializes the complete UniverseState to a structured JSON string.
 public export
-serializeUniverseState : UniverseState -> String
-serializeUniverseState (MkUniverseState sub stateVec) =
+serializeUniverseState : {0 totalLag : Integer} -> UniverseState totalLag -> String
+serializeUniverseState (MkUniverseState sub stateVec prf) =
   "{\"substrate\":" ++ serializeSubstrate sub ++
   ",\"stateVector\":" ++ serializeVexel stateVec ++ "}"
 

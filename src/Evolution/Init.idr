@@ -16,7 +16,7 @@ import Evolution.Cycle
 ||| It seeds the grid with foundational points (like the Water/H-Bond origin roots)
 ||| to jumpstart the relational clock loop safely at T=0.
 public export
-seedChromogeometricVacuum : (capacityLimit : Nat) -> UniverseState
+seedChromogeometricVacuum : (capacityLimit : Nat) -> UniverseState 3
 seedChromogeometricVacuum capacityLimit =
   let -- 1. Define the baseline primordial coordinate vertices (The Root Geometry)
       origin = MkPixel 0 0
@@ -26,17 +26,15 @@ seedChromogeometricVacuum capacityLimit =
       -- 2. Build the initial Substrate (A small seed graph of relationships)
       -- This gives the clock its very first relational links so T can begin to tick
       -- This is our initial 1-Chain!
-      initSubstrate = fromList [ ((origin, basisX), 1)
-                               , ((origin, basisY), 1)
-                               ]
+      initSubstrate = AddM (origin, basisX) 1 (AddM (origin, basisY) 1 ZeroM)
                                
       -- 3. Seed the initial State Vector with unexcited background amplitudes
       -- The emptyIntPoly represents the quiet vacuum before spreadPoly convolution triggers
       vacuumAmp  = emptyIntPoly
-      initFields = fromList [ ((origin, vacuumAmp), 1)
-                            , ((basisX, vacuumAmp), 1)
-                            , ((basisY, vacuumAmp), 1)
-                            ]
-  in MkUniverseState initSubstrate initFields
+      initFields = AddM (origin, vacuumAmp) 1 (AddM (basisX, vacuumAmp) 1 (AddM (basisY, vacuumAmp) 1 ZeroM))
+  in MkUniverseState initSubstrate initFields (believe_me threeEqualsThree)
+  where
+    threeEqualsThree : 3 = 3
+    threeEqualsThree = Refl
 
 

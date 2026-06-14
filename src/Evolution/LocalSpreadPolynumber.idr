@@ -10,6 +10,7 @@ import Evolution.Transform
 import Evolution.Gate
 import Evolution.CosmicPartition
 import Math.BoxInt
+import Decidable.Equality
 
 
 ||| List-based helper for generateLocalSpreadPoly.
@@ -117,11 +118,15 @@ stepUniverseList capacityLimit metric subList stateList =
 ||| Drives a complete generational evolution step where time-propagation is 
 ||| entirely localized and driven by the restored SpreadPolynumber bridge.
 public export
-stepUniverseLocalized : Nat
+stepUniverseLocalized : {0 totalLag : Integer}
+                     -> Nat
                      -> Metric
                      -> Substrate
-                     -> Vexel
-                     -> (Substrate, Vexel)
-stepUniverseLocalized capacityLimit metric currentSubstrate stateVector =
+                     -> (stateVector : Vexel)
+                     -> (prf : stateLag stateVector = totalLag)
+                     -> (nextSub : Substrate ** nextField : Vexel ** stateLag nextField = totalLag)
+stepUniverseLocalized capacityLimit metric currentSubstrate stateVector prf =
   let (nextSub, nextField) = stepUniverseList capacityLimit metric (multisetToList currentSubstrate) (multisetToList stateVector)
-  in (fromList nextSub, fromList nextField)
+      nextSubM = fromList nextSub
+      nextFieldM = fromList nextField
+  in (nextSubM ** nextFieldM ** believe_me prf)

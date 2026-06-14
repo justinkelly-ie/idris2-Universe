@@ -47,7 +47,7 @@ ExhibitsGalacticRotation Vexel where
 ||| Galactic rotation for a full UniverseState.
 ||| The substrate causal density contributes to the effective rotational drag.
 public export
-ExhibitsGalacticRotation UniverseState where
+{totalLag : Integer} -> ExhibitsGalacticRotation (UniverseState totalLag) where
   calculateRotationMetrics state =
     let visibleMass = Prelude.integerToNat (stateLag (stateVector state))
         causalDrag  = substrateLag (substrate state)

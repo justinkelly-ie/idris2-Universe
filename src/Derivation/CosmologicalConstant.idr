@@ -46,7 +46,7 @@ CalculatesVacuumEnergy Vexel where
 ||| For a full UniverseState, the substrate density also contributes to the
 ||| effective cosmological constant — denser substrates reduce available vacuum energy.
 public export
-CalculatesVacuumEnergy UniverseState where
+{totalLag : Integer} -> CalculatesVacuumEnergy (UniverseState totalLag) where
   predictCosmologicalConstant state =
     let darkEnergyCount : Nat = darkEnergyStates
         gridLimit       : Nat = primordialGridStates

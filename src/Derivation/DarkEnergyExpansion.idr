@@ -56,7 +56,7 @@ ExertsExpansivePressure Vexel where
 
 ||| Expansive pressure for a full UniverseState.
 public export
-ExertsExpansivePressure UniverseState where
+{totalLag : Integer} -> ExertsExpansivePressure (UniverseState totalLag) where
   calculateExpansivePressure state =
     let occupancy   = Prelude.integerToNat (stateLag (stateVector state))
         causalDepth = substrateLag (substrate state)

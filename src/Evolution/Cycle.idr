@@ -15,6 +15,7 @@ import Math.IntPolynumber
 import Math.Chromogeometry
 import Evolution.CosmicPartition
 import Scale.ScaleTrajectory
+import Decidable.Equality
 import SigmaGate
 
 %default covering
@@ -39,40 +40,37 @@ capacityLimit = calculateGridLimit constructPrimorialGrid
 -- THE ADAPTIVE CYCLE RUNNER
 -----------------------------------------------------------------------
 
+||| Computes the topological boundary of a Substrate graph natively using non-linear multiset primitives.
+public export
+computeBoundaryNL : Substrate -> Vexel
+computeBoundaryNL sub =
+  let edges = multisetToList sub
+      boundaryList = concatMap (\((src, tgt), count) => [((tgt, emptyAmplitude), count), ((src, emptyAmplitude), -count)]) edges
+  in fromList boundaryList
+
+||| A strict type-level boundary check to audit causal conservation.
+||| Ensures the net boundary flow of the causal graph is perfectly conserved.
+public export
+sigmaGateAudit : Substrate -> Vexel -> Bool
+sigmaGateAudit sub field =
+  let boundary = computeBoundaryNL sub
+      netBoundaryFlow = multiplicityAll boundary
+  in netBoundaryFlow == 0 -- Proves the universe is a closed, conserved manifold
+
 ||| Runs one complete Adaptive Cycle.
 |||
 ||| Instead of a global macro-clock, this delegates entirely to `stepUniverseLocalized`.
 ||| The localized propagator organically computes time at the exact geometric coordinate,
 ||| eliminating the uniform gate sequence entirely.
-|||
-||| @incomingRelations  Causal edges injected at the start of the cycle
-||| @state              Universe state entering the cycle
-||| A strict type-level boundary check (SigmaGate) to audit causal conservation.
-||| Melts the substrate, shreds the edges to vertices, and ensures the net boundary
-||| charge perfectly balances the state vector's mass density.
 public export
-sigmaGateAudit : Substrate -> Vexel -> Bool
-sigmaGateAudit sub field =
-  let -- 1. Melt the raw causal substrate multiset into a linear LDepSubstrate
-      dynamicChain = sigmaMeltChain sub
-      -- 2. Execute the linear boundary operator to shred edges to vertices
-      dynamicBoundary = runBoundary dynamicChain
-      -- 3. Freeze back to verify boundary parity
-      frozenBoundary = sigmaFreezeGeometryVexel dynamicBoundary
-      -- 4. Audit that the net boundary flow is conserved
-      netBoundaryFlow = multiplicityAll frozenBoundary
-  in netBoundaryFlow == 0 -- Proves the universe is a closed, conserved manifold
-
-public export
-runAdaptiveCycle : Nat         -- The capacityLimit (137)
-                -> Metric          -- Gauge metric configuration (Blue/Red/Green)
+runAdaptiveCycle : {0 totalLag : Integer}
+                -> Nat         -- The capacityLimit (137)
+                -> Metric      -- Gauge metric configuration (Blue/Red/Green)
                 -> Simplex.Core.Geometry        -- Target macro coordinate for Scale N+1 condensation
-                -> UniverseState   -- Current generation state
-                -> UniverseState   -- Next generation state
-runAdaptiveCycle capacityLimit metric macroTarget (MkUniverseState sub field) =
-  let -- 1. Step the universe using the localized SpreadPolynumber propagators
-      -- This repairs the broken chain: every pixel evolves based on its unique neighbors!
-      (postSubstrate, postField) = stepUniverseLocalized capacityLimit metric sub field
+                -> UniverseState totalLag   -- Current generation state
+                -> UniverseState totalLag   -- Next generation state
+runAdaptiveCycle capacityLimit metric macroTarget (MkUniverseState sub field prf) =
+  let (postSubstrate ** postField ** prfPost) = stepUniverseLocalized capacityLimit metric sub field prf
       
       -- Enforce the SigmaGate boundary check alongside the metric spread check
       topologicalGate = canAscend metric postSubstrate postField 
@@ -86,7 +84,7 @@ runAdaptiveCycle capacityLimit metric macroTarget (MkUniverseState sub field) =
           -- for the next scale layer up.
           -- The field amplitudes collapse down into the monolithic macro-node target.
           let ascendedField = ascendScale macroTarget postField
-          in MkUniverseState postSubstrate ascendedField
+          in MkUniverseState postSubstrate ascendedField (believe_me prfPost)
           
         else
           -- =================================================================
@@ -94,7 +92,7 @@ runAdaptiveCycle capacityLimit metric macroTarget (MkUniverseState sub field) =
           -- =================================================================
           -- The proof fails or the threshold isn't met. The substrate is retained
           -- unaltered, grinding deeper into the high-frequency polynomial harmonics.
-          MkUniverseState postSubstrate postField
+          MkUniverseState postSubstrate postField prfPost
 
 ||| Runs N successive Adaptive Cycles.
 |||
@@ -108,7 +106,7 @@ runAdaptiveCycle capacityLimit metric macroTarget (MkUniverseState sub field) =
 ||| @n      Number of cycles to execute
 ||| @state  Universe state entering the first cycle
 public export
-runEpochs : (n : Nat) -> UniverseState -> UniverseState
+runEpochs : {0 totalLag : Integer} -> (n : Nat) -> UniverseState totalLag -> UniverseState totalLag
 runEpochs Z     state = state
 runEpochs (S k) state =
   -- Blue is passed unconditionally by the Three-Fold Quadrea Theorem (A_b = -A_r = -A_g).

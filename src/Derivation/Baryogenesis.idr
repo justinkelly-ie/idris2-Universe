@@ -46,8 +46,8 @@ public export
 evaluateEpoch2 : Vexel -> BaryonGenesis
 evaluateEpoch2 _ = 
   let grid = constructPrimorialGrid
-      de   = Prelude.integerToNat (multiplicityAll (darkEnergy grid))
-      vm   = Prelude.integerToNat (multiplicityAll (visibleMatter grid))
+      de   = Prelude.integerToNat (multiplicityAll (darkEnergy grid).fst)
+      vm   = Prelude.integerToNat (multiplicityAll (visibleMatter grid).fst)
   in MkBaryonGenesis de vm
 
 
