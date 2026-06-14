@@ -4,7 +4,6 @@ import Simplex.Core
 
 import Math.IntPolynumber
 import Math.Multiset
-import Simplex.Core
 import Math.SpreadPolynumber
 
 %default total
@@ -24,12 +23,6 @@ import Math.SpreadPolynumber
 ||| Fracture, the system is mathematically forced to spawn an anti-quark pair 
 ||| to plug the hole (Vacuum Polarization), or pull the quark back in.
 
-||| A topological hole created by extracting a fractional state
-public export
-record MultisetDefect where
-  constructor MkMultisetDefect
-  ||| The amount of unmet fractional tension
-  vacuumTension : Double
 
 ||| Evaluates if a Vexel (FibreBundle) contains an isolated quark (fractional defect).
 |||
