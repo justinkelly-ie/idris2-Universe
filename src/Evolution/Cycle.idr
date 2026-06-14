@@ -13,7 +13,7 @@ import Math.Multiset
 import Math.Polynumber
 import Math.IntPolynumber
 import Math.Chromogeometry
-import System.CosmicPartition
+import Evolution.CosmicPartition
 import Scale.ScaleTrajectory
 import SigmaGate
 

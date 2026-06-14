@@ -1,4 +1,4 @@
-module System.PeriodicTable
+module Compound.PeriodicTable
 
 import Simplex.Core
 import Evolution.State

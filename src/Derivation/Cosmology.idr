@@ -1,13 +1,13 @@
 module Derivation.Cosmology
 
 import Evolution.Cycle
-import System.CosmicPartition
+import Evolution.CosmicPartition
 import Evolution.State
 
 import Evolution.State
 
 import Evolution.Cycle
-import System.CosmicPartition
+import Evolution.CosmicPartition
 
 %default total
 

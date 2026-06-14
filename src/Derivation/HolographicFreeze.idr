@@ -1,6 +1,6 @@
 module Derivation.HolographicFreeze
 
-import System.CosmicPartition
+import Evolution.CosmicPartition
 import Derivation.Baryogenesis
 import Evolution.State
 import Evolution.Cycle
@@ -9,7 +9,7 @@ import Evolution.State
 
 import Evolution.Cycle
 import Derivation.Baryogenesis
-import System.CosmicPartition
+import Evolution.CosmicPartition
 
 %default covering
 

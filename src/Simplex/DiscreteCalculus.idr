@@ -7,7 +7,7 @@ import Data.List
 import Simplex.Core
 import Simplex.SigmaLinear
 import Evolution.Cycle
-import System.CosmicPartition
+import Evolution.CosmicPartition
 import Math.BoxInt
 
 %default total

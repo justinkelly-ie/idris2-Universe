@@ -2,14 +2,14 @@ module Derivation.DarkEnergyExpansion
 
 import Simplex.Core
 import Derivation.CosmicEnergyBudget
-import System.CosmicPartition
+import Evolution.CosmicPartition
 
 import Math.Chromogeometry
 import Math.Multiset
 import Simplex.Core
 import Derivation.CosmicEnergyBudget
 
-import System.CosmicPartition
+import Evolution.CosmicPartition
 import Math.Fraction
 
 %default total

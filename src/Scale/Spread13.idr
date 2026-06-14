@@ -1,4 +1,4 @@
-module System.Spread13
+module Scale.Spread13
 
 
 import Math.SpreadPolynumber

@@ -1,4 +1,4 @@
-module System.CosmicPartition
+module Evolution.CosmicPartition
 
 import Evolution.Gate
 import Evolution.State

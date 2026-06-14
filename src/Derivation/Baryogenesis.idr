@@ -1,14 +1,14 @@
 module Derivation.Baryogenesis
 
 import Evolution.Cycle
-import System.CosmicPartition
+import Evolution.CosmicPartition
 import Evolution.State
 
 import Evolution.State
 
 import Math.SpreadPolynumber
 import Evolution.Cycle
-import System.CosmicPartition
+import Evolution.CosmicPartition
 
 %default total
 

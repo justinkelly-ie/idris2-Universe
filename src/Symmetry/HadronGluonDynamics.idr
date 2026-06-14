@@ -1,4 +1,4 @@
-module System.HadronGluonDynamics
+module Symmetry.HadronGluonDynamics
 
 import Symmetry.Baryon
 

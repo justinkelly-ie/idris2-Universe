@@ -5,7 +5,7 @@ import Math.Multiset
 import Math.IntPolynumber
 import Math.Chromogeometry
 import Symmetry.Photon
-import System.CosmicPartition
+import Evolution.CosmicPartition
 import Math.BoxInt
 
 %default total

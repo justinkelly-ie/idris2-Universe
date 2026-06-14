@@ -1,13 +1,13 @@
 module Derivation.CosmicEnergyBudget
 
-import System.CosmicPartition
+import Evolution.CosmicPartition
 
 import Math.Multiset
 import Math.IntPolynumber
 import Math.Polynumber
 import Math.Fraction
 
-import System.CosmicPartition
+import Evolution.CosmicPartition
 
 %default total
 

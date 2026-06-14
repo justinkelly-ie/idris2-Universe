@@ -1,7 +1,7 @@
 module Scale.PythagoreanFixedPoint
 
 import Simplex.Core
-import System.PeriodicTable
+import Compound.PeriodicTable
 import Compound.Water
 import Evolution.Gate
 import Compound.Oxygen

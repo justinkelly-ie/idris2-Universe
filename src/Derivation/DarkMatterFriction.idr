@@ -2,13 +2,13 @@ module Derivation.DarkMatterFriction
 
 import Simplex.Core
 import Derivation.CosmicEnergyBudget
-import System.CosmicPartition
+import Evolution.CosmicPartition
 
 import Simplex.Core
 import Math.Chromogeometry
 import Derivation.CosmicEnergyBudget
 
-import System.CosmicPartition
+import Evolution.CosmicPartition
 import Math.Fraction
 
 %default total

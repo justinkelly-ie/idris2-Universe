@@ -8,7 +8,7 @@ import Simplex.Twist
 import Evolution.State
 import Evolution.Transform
 import Evolution.Gate
-import System.CosmicPartition
+import Evolution.CosmicPartition
 import Math.BoxInt
 
 

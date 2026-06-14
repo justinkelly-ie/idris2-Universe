@@ -2,7 +2,7 @@ module Derivation.CosmologicalConstant
 
 import Simplex.Core
 import Derivation.CosmicEnergyBudget
-import System.CosmicPartition
+import Evolution.CosmicPartition
 
 import Math.IntPolynumber
 import Math.Multiset
@@ -11,7 +11,7 @@ import Math.SpreadPolynumber
 import Derivation.CosmicEnergyBudget
 import Math.Fraction
 
-import System.CosmicPartition
+import Evolution.CosmicPartition
 %default total
 
 ||| The Cosmological Constant (Vacuum Energy Problem)

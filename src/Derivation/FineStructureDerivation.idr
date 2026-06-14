@@ -2,7 +2,7 @@ module Derivation.FineStructureDerivation
 
 import Simplex.Core
 import Derivation.CosmicEnergyBudget
-import System.CosmicPartition
+import Evolution.CosmicPartition
 import Derivation.GravitationalTimeDilation
 
 import Math.IntPolynumber
@@ -11,7 +11,7 @@ import Simplex.Core
 import Derivation.GravitationalTimeDilation
 import Derivation.CosmicEnergyBudget
 
-import System.CosmicPartition
+import Evolution.CosmicPartition
 import Math.Fraction
 
 %default total

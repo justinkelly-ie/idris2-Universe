@@ -2,7 +2,7 @@ module Derivation.TullyFisherRelation
 
 import Simplex.Core
 import Derivation.CosmicEnergyBudget
-import System.CosmicPartition
+import Evolution.CosmicPartition
 
 import Math.IntPolynumber
 import Math.Multiset
@@ -12,7 +12,7 @@ import Derivation.CosmicEnergyBudget
 import Math.Fraction
 import Math.Chromogeometry
 
-import System.CosmicPartition
+import Evolution.CosmicPartition
 %default total
 
 ||| The Tully-Fisher Relation (Galactic Rotation Curves)
