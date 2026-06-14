@@ -74,32 +74,30 @@ leibnizIntegralLag (S k) =
 ||| Sums the amplitude-weighted edge multiplicities across all directed links
 ||| in the substrate to measure total accumulated coordinate tension.
 public export
-substrateIntegral : Substrate -> Vexel -> Integer
+substrateIntegral : Substrate -> Vexel -> BoxInt
 substrateIntegral substrate field =
   let edges  = multisetToList substrate
       states = multisetToList field
       
-      getEnergy : Simplex.Core.Geometry -> Integer
+      getEnergy : Simplex.Core.Geometry -> BoxInt
       getEnergy geom =
         case filter (\((g, _), _) => g == geom) states of
-          (((_, amp), _) :: _) =>
-            let (MkUr val) = boxToInt (multiplicityAll amp)
-            in val
+          (((_, amp), _) :: _) => multiplicityAll amp
           []                   => 0
           
-      edgeContribution : ((Simplex.Core.Geometry, Simplex.Core.Geometry), Integer) -> Integer
+      edgeContribution : ((Simplex.Core.Geometry, Simplex.Core.Geometry), Integer) -> BoxInt
       edgeContribution ((src, tgt), count) =
         let energySrc = getEnergy src
             energyTgt = getEnergy tgt
-        in count * (energySrc + energyTgt)
+        in fromInteger count * (energySrc + energyTgt)
   in sum (map edgeContribution edges)
 
 ||| Computes the discrete flux integral of a 1-cochain (edge field) over the substrate.
 ||| Sums the signed multiplicity weights of all edges, representing the net flow.
 public export
-discreteFluxIntegral : Substrate -> Integer
+discreteFluxIntegral : Substrate -> BoxInt
 discreteFluxIntegral sub =
-  sum (map snd (multisetToList sub))
+  sum (map (fromInteger . snd) (multisetToList sub))
 
 ||| Computes the discrete antiderivative (integration by summation) for a sequence
 ||| of difference polynomials. Given a list of derivatives [df_0, df_1, ...],
