@@ -66,7 +66,7 @@ record PythagoreanFixedPoint where
 ||| Computes the full chromogeometric fingerprint of a grid coordinate.
 public export
 fingerprint : Geometry -> PythagoreanFixedPoint
-fingerprint p = MkFixedPoint p (quadranceNL Blue (MkPixel 0 0) p) (quadranceNL Red (MkPixel 0 0) p) (quadranceNL Green (MkPixel 0 0) p)
+fingerprint p = MkFixedPoint p (quadranceNL Blue (MkPixel 0 0) p) (quadranceNL Red (MkPixel 0 0) (castMetric p)) (quadranceNL Green (MkPixel 0 0) (castMetric p))
 
 ||| The Water fixed point: (4, 3)
 public export

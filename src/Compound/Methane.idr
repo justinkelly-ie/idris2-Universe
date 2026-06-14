@@ -86,19 +86,19 @@ bondsBlueOrthogonal = isPerpendicularNL Blue ch4_h1 ch4_h2
 ||| This is the TimeGate signature (+7) balancing itself dynamically.
 public export
 redSignatureH1 : BoxInt
-redSignatureH1 = quadranceNL Red cPosition ch4_h1 -- 16 - 9 = 7
+redSignatureH1 = quadranceNL Red (castMetric cPosition) (castMetric ch4_h1) -- 16 - 9 = 7
 
 public export
 redSignatureH2 : BoxInt
-redSignatureH2 = quadranceNL Red cPosition ch4_h2 -- 9 - 16 = -7
+redSignatureH2 = quadranceNL Red (castMetric cPosition) (castMetric ch4_h2) -- 9 - 16 = -7
 
 public export
 redSignatureH3 : BoxInt
-redSignatureH3 = quadranceNL Red cPosition ch4_h3 -- 16 - 9 = 7
+redSignatureH3 = quadranceNL Red (castMetric cPosition) (castMetric ch4_h3) -- 16 - 9 = 7
 
 public export
 redSignatureH4 : BoxInt
-redSignatureH4 = quadranceNL Red cPosition ch4_h4 -- 9 - 16 = -7
+redSignatureH4 = quadranceNL Red (castMetric cPosition) (castMetric ch4_h4) -- 9 - 16 = -7
 
 -----------------------------------------------------------------------
 -- FORMAL FINDINGS & PROOFS

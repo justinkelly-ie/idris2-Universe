@@ -84,7 +84,7 @@ iceFingerprint = fingerprint iceDirection
 ||| This is the folding number — the product of structure and time.
 public export
 iceFoldingNumber : BoxInt
-iceFoldingNumber = quadranceNL Red (MkPixel 0 0) iceDirection
+iceFoldingNumber = quadranceNL Red (MkPixel 0 0) (castMetric iceDirection)
 
 ||| The folding number factors into MatterGate × TimeGate.
 public export

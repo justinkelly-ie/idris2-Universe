@@ -22,7 +22,7 @@ interface ConservesEnergy a b where
 ||| A simple implementation demonstrating energy conservation between two pixels.
 ||| (e.g. a Photon transforming into another state, or elastic scattering).
 public export
-implementation ConservesEnergy (Pixel BoxInt) (Pixel BoxInt) where
+implementation ConservesEnergy Simplex.Core.Geometry Simplex.Core.Geometry where
   isEnergyConserved (MkPixel x1 y1) (MkPixel x2 y2) = 
     let res = quadranceNL Blue (MkPixel 0 0) (MkPixel x1 y1) == quadranceNL Blue (MkPixel 0 0) (MkPixel x2 y2)
     in Builtin.(#) res (Builtin.(#) (MkPixel x1 y1) (MkPixel x2 y2))

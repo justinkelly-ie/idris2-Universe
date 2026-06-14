@@ -113,7 +113,7 @@ interHydrogenQuadrance = quadranceNL Blue h1Position h2Position
 ||| This means the bonds are null-separated in Minkowski geometry.
 public export
 bondsRedPerpendicular : Bool
-bondsRedPerpendicular = isPerpendicularNL Red h1Position h2Position
+bondsRedPerpendicular = isPerpendicularNL Red (castMetric h1Position) (castMetric h2Position)
 
 -----------------------------------------------------------------------
 -- ELECTRON INTERACTION
@@ -142,13 +142,13 @@ bondingElectrons = (bondElectron h1Position, bondElectron h2Position)
 ||| The Green quadrance IS Oxygen's Z (8) times the MatterGate degree (3).
 public export
 electronRedQuadrance : BoxInt
-electronRedQuadrance = quadranceNL Red oPosition h1Position
+electronRedQuadrance = quadranceNL Red (castMetric oPosition) (castMetric h1Position)
 
 ||| The Green quadrance of the electron in the bond.
 ||| Q_Green = 2·4·3 = 24 = 8 × 3 = Oxygen(Z) × MatterGate(n)
 public export
 electronGreenQuadrance : BoxInt
-electronGreenQuadrance = quadranceNL Green oPosition h1Position
+electronGreenQuadrance = quadranceNL Green (castMetric oPosition) (castMetric h1Position)
 
 ||| The electron-to-electron spread between the two bonding electrons.
 ||| This measures the angular separation of the two electrons as seen

@@ -28,7 +28,7 @@ import Data.List
 |||
 public export
 0 Geometry : Type
-Geometry = Pixel BoxInt
+Geometry = Pixel Blue BoxInt
 
 -----------------------------------------------------------------------
 -- 2. AMPLITUDE (The Quantum State Value)

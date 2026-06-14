@@ -10,7 +10,7 @@ import Math.Fraction
 ||| but as an algebraic Null-Quadrance Operator on the Red (Relativistic) Metric.
 public export
 isPhotonPixel : Geometry -> Bool
-isPhotonPixel p = quadranceNL Red (MkPixel 0 0) p == 0
+isPhotonPixel p = quadranceNL Red (MkPixel 0 0) (castMetric p) == 0
 
 ||| Represents a validated Photon.
 ||| It explicitly encapsulates a particle state that satisfies the Red Null-Quadrance property,
