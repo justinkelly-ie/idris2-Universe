@@ -44,10 +44,36 @@ import Data.List
 |||     permanent distance from structural collapse.
 
 public export
-record FundamentalGate where
-  constructor MkFundamentalGate
-  name : String
-  degree : Nat
+data GatePrime : Nat -> Type where
+  Vacuum     : GatePrime 1
+  Background : GatePrime 2
+  Matter     : GatePrime 3
+  Bond       : GatePrime 4
+  Charge     : GatePrime 5
+  Time       : GatePrime 7
+  WeakForce  : GatePrime 11
+  Resonance  : GatePrime 13
+  NonGate    : (n : Nat) -> GatePrime n
+
+public export
+data FundamentalGateIndexed : Nat -> Type where
+  MkFundamentalGateIndexed : String -> GatePrime n -> FundamentalGateIndexed n
+
+public export
+0 FundamentalGate : Type
+FundamentalGate = (n : Nat ** FundamentalGateIndexed n)
+
+public export
+mkFundamentalGate : (name : String) -> (n : Nat) -> (prf : GatePrime n) -> FundamentalGate
+mkFundamentalGate name n prf = (n ** MkFundamentalGateIndexed name prf)
+
+public export
+degree : FundamentalGate -> Nat
+degree g = g.fst
+
+public export
+name : FundamentalGate -> String
+name (n ** MkFundamentalGateIndexed gateName prf) = gateName
 
 -----------------------------------------------------------------------
 -- INDIVIDUAL GATES
@@ -56,17 +82,17 @@ record FundamentalGate where
 ||| n=1: The identity gate. spreadPoly 1 = ZeroM (vacuum — no evolution).
 public export
 VacuumGate : FundamentalGate
-VacuumGate = MkFundamentalGate "Absolute Vacuum" 1
+VacuumGate = mkFundamentalGate "Absolute Vacuum" 1 Vacuum
 
 ||| n=2: Phase 1 — UNFOLDING. Binary field instantiation.
 public export
 BackgroundGate : FundamentalGate
-BackgroundGate = MkFundamentalGate "Background" 2
+BackgroundGate = mkFundamentalGate "Background" 2 Background
 
 ||| n=3: Phase 2 — EXPANSION. 3D geometry crystallisation (3^3 = 27).
 public export
 MatterGate : FundamentalGate
-MatterGate = MkFundamentalGate "Matter" 3
+MatterGate = mkFundamentalGate "Matter" 3 Matter
 
 ||| n=4: Phase 2b — MOLECULAR BONDING. The composite gate 2² = 4.
 ||| After 3D matter crystallises, binary recombination creates stable bonds
@@ -76,27 +102,27 @@ MatterGate = MkFundamentalGate "Matter" 3
 ||| background binary field (n=2).
 public export
 BondGate : FundamentalGate
-BondGate = MkFundamentalGate "Molecular Bond" 4
+BondGate = mkFundamentalGate "Molecular Bond" 4 Bond
 
 ||| n=5: Phase 3a — SATURATION (charge). Irreducible fractional charges (1/3, 2/3).
 public export
 ChargeGate : FundamentalGate
-ChargeGate = MkFundamentalGate "Fractional Charge" 5
+ChargeGate = mkFundamentalGate "Fractional Charge" 5 Charge
 
 ||| n=7: Phase 3b — SATURATION (time). Leibniz Lag from fractional irresolvability.
 public export
 TimeGate : FundamentalGate
-TimeGate = MkFundamentalGate "Time Dilation" 7
+TimeGate = mkFundamentalGate "Time Dilation" 7 Time
 
 ||| n=11: Phase 4 — COLLAPSE. Denominator overflow triggers beta decay.
 public export
 WeakForceGate : FundamentalGate
-WeakForceGate = MkFundamentalGate "Weak Force" 11
+WeakForceGate = mkFundamentalGate "Weak Force" 11 WeakForce
 
 ||| n=13: Phase 5 — RESIDUE. Decoherence shattering produces dark matter seed.
 public export
 ResonanceGate : FundamentalGate
-ResonanceGate = MkFundamentalGate "Decoherence Resonance" 13
+ResonanceGate = mkFundamentalGate "Decoherence Resonance" 13 Resonance
 
 -----------------------------------------------------------------------
 -- THE PRIMORIAL MANIFOLD
