@@ -1,0 +1,138 @@
+package contrib
+version = 0.8.0
+
+opts = "--ignore-missing-ipkg -Wno-shadowing"
+
+modules = Control.ANSI,
+          Control.ANSI.SGR,
+          Control.ANSI.CSI,
+
+          Control.Delayed,
+
+          Control.Arrow,
+          Control.Category,
+
+          Control.Validation,
+
+          Data.Binary.Digit,
+          Data.Binary,
+
+          Data.Fin.Extra,
+
+          Data.Fun.Extra,
+          Data.Fun.Graph,
+
+          Data.IMaybe,
+
+          Data.Int.Order,
+
+          Data.IOMatrix,
+
+          Data.Late,
+
+          Data.Linear.Array,
+
+          Data.List.TailRec,
+          Data.List.Equalities,
+          Data.List.Extra,
+          Data.List.Reverse,
+          Data.List.Views.Extra,
+          Data.List.Palindrome,
+          Data.List.Alternating,
+          Data.List.Sufficient,
+
+          Data.List.Elem.Extra,
+
+          Data.Logic.Propositional,
+
+          Data.Monoid.Exponentiation,
+
+          Data.Nat.Ack,
+          Data.Nat.Division,
+          Data.Nat.Equational,
+          Data.Nat.Exponentiation,
+          Data.Nat.Fact,
+          Data.Nat.Factor,
+          Data.Nat.Fib,
+          Data.Nat.Order.Strict,
+          Data.Nat.Order.Relation,
+          Data.Nat.Properties,
+
+          Data.Order,
+
+          Data.Path,
+
+          Data.Rel.Complement,
+
+          Data.Seq.Internal,
+          Data.Seq.Sized,
+          Data.Seq.Unsized,
+
+          Data.Stream.Extra,
+
+          Data.String.Extra,
+          Data.String.Interpolation,
+          Data.String.Iterator,
+          Data.String.Parser,
+          Data.String.Parser.Expression,
+          Data.String.Position,
+
+          Data.Telescope,
+          Data.Telescope.Telescope,
+          Data.Telescope.Segment,
+          Data.Telescope.Fun,
+          Data.Telescope.SimpleFun,
+          Data.Telescope.Congruence,
+
+          Data.Validated,
+
+          Data.Vect.Properties,
+          Data.Vect.Properties.Tabulate,
+          Data.Vect.Properties.Index,
+          Data.Vect.Properties.Foldr,
+          Data.Vect.Properties.Map,
+          Data.Vect.Properties.Fin,
+          Data.Vect.Extra,
+          Data.Vect.Sort,
+
+          Debug.Buffer,
+
+          Decidable.Finite.Fin,
+          Decidable.Order.Strict,
+          Decidable.Decidable.Extra,
+
+          Language.JSON,
+          Language.JSON.Data,
+          Language.JSON.Lexer,
+          Language.JSON.Parser,
+          Language.JSON.String,
+          Language.JSON.String.Lexer,
+          Language.JSON.String.Parser,
+          Language.JSON.String.Tokens,
+          Language.JSON.Tokens,
+
+          System.Console.GetOpt,
+          System.Directory.Tree,
+          System.Future,
+          System.Random,
+          System.Path,
+
+          Text.Bounded,
+          Text.Distance.Levenshtein,
+          Text.Lexer,
+          Text.Lexer.Core,
+          Text.Lexer.Tokenizer,
+          Text.Literate,
+          Text.Parser,
+          Text.Parser.Core,
+          Text.Parser.Expression,
+          Text.PrettyPrint.Prettyprinter,
+          Text.PrettyPrint.Prettyprinter.Doc,
+          Text.PrettyPrint.Prettyprinter.Render.HTML,
+          Text.PrettyPrint.Prettyprinter.Render.String,
+          Text.PrettyPrint.Prettyprinter.Render.Terminal,
+          Text.PrettyPrint.Prettyprinter.SimpleDocTree,
+          Text.PrettyPrint.Prettyprinter.Symbols,
+          Text.PrettyPrint.Prettyprinter.Util,
+          Text.Quantity,
+          Text.Token

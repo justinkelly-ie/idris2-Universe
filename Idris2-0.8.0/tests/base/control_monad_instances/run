@@ -1,0 +1,5 @@
+. ../../testutils.sh
+
+check SearchReader.idr
+check SearchWriter.idr
+check SearchState.idr

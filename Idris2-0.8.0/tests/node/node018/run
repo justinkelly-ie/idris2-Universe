@@ -1,0 +1,5 @@
+. ../../testutils.sh
+
+rm testout.txt
+
+run --cg node File.idr

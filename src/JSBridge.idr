@@ -5,6 +5,8 @@ import Data.List
 import Math.Multiset
 import Math.IntPolynumber
 import Math.Chromogeometry
+import Math.BoxInt
+import Math.Pixel
 import Simplex.Core
 import Evolution.LocalSpreadPolynumber
 import Evolution.Cycle
@@ -32,7 +34,7 @@ parseEdge s =
     [edgePart, countPart] =>
       case splitList (\c => c == ',') edgePart of
         [x1, y1, x2, y2] =>
-          Just (((MkPixel (parseInt x1) (parseInt y1)), (MkPixel (parseInt x2) (parseInt y2))), parseInt countPart)
+          Just (((MkPixel (intToBoxInt (parseInt x1)) (intToBoxInt (parseInt y1))), (MkPixel (intToBoxInt (parseInt x2)) (intToBoxInt (parseInt y2)))), parseInt countPart)
         _ => Nothing
     _ => Nothing
 
@@ -43,10 +45,10 @@ parseSubstrate s =
       edges = mapMaybe parseEdge items
   in fromList edges
 
-parseTerms : List String -> List ((Nat, Nat), Integer)
+parseTerms : List String -> List ((Nat, Nat), BoxInt)
 parseTerms [] = []
 parseTerms (a :: b :: c :: rest) =
-  ((parseNat a, parseNat b), parseInt c) :: parseTerms rest
+  ((parseNat a, parseNat b), intToBoxInt (parseInt c)) :: parseTerms rest
 parseTerms _ = []
 
 parseAmplitude : String -> Amplitude
@@ -60,7 +62,7 @@ parseMaxelItem s =
     [geomPart, countPart, ampPart] =>
       case splitList (\c => c == ',') geomPart of
         [gx, gy] =>
-          let geom = MkPixel (parseInt gx) (parseInt gy)
+          let geom = MkPixel (intToBoxInt (parseInt gx)) (intToBoxInt (parseInt gy))
               count = parseInt countPart
               amp = parseAmplitude ampPart
           in Just ((geom, amp), count)
@@ -74,49 +76,93 @@ parseVexel s =
       maxels = mapMaybe parseMaxelItem items
   in fromList maxels
 
+-- FFI EXPORTS FOR TYPED ARRAY OUTPUT
+
+%foreign "javascript:lambda:() => { if (globalThis.clearUniverseBuffers) globalThis.clearUniverseBuffers(); }"
+prim_clearBuffers : PrimIO ()
+
+%foreign "javascript:lambda:(px, py, cx, cy, count) => { if (globalThis.pushEdge) globalThis.pushEdge(px, py, cx, cy, count); }"
+prim_pushEdge : Int -> Int -> Int -> Int -> Int -> PrimIO ()
+
+%foreign "javascript:lambda:(x, y, alpha, beta, count) => { if (globalThis.pushMaxel) globalThis.pushMaxel(x, y, alpha, beta, count); }"
+prim_pushMaxel : Int -> Int -> Int -> Int -> Int -> PrimIO ()
+
+clearBuffers : IO ()
+clearBuffers = primIO prim_clearBuffers
+
+pushEdge : Integer -> Integer -> Integer -> Integer -> Integer -> IO ()
+pushEdge px py cx cy count = primIO (prim_pushEdge (fromInteger px) (fromInteger py) (fromInteger cx) (fromInteger cy) (fromInteger count))
+
+pushMaxel : Integer -> Integer -> Nat -> Nat -> Integer -> IO ()
+pushMaxel x y alpha beta count = primIO (prim_pushMaxel (fromInteger x) (fromInteger y) (cast alpha) (cast beta) (fromInteger count))
+
+exportSubstrate : Substrate -> IO ()
+exportSubstrate sub = do
+  traverse_ (\((MkPixel s t, MkPixel cx cy), count) => do
+      let (MkUr px) = boxToInt s
+      let (MkUr py) = boxToInt t
+      let (MkUr c_x) = boxToInt cx
+      let (MkUr c_y) = boxToInt cy
+      pushEdge px py c_x c_y count) (multisetToList sub)
+  
+exportVexel : Vexel -> IO ()
+exportVexel v = do
+  traverse_ (\((MkPixel s t, amp), mCount) => do
+      let (MkUr px) = boxToInt s
+      let (MkUr py) = boxToInt t
+      traverse_ (\((alpha, beta), tCount) => do
+          let (MkUr tC) = boxToInt tCount
+          pushMaxel px py alpha beta (tC * mCount)) (multisetToList amp)) (multisetToList v)
+
+exportUniverseState : UniverseState -> IO ()
+exportUniverseState (MkUniverseState sub stateVec) = do
+  clearBuffers
+  exportSubstrate sub
+  exportVexel stateVec
+
 -- EXPOSE API FUNCTIONS
 
-runAdaptiveCycleBridge : String -> String -> String -> String -> String -> String
-runAdaptiveCycleBridge capacityLimitStr metricStr macroTargetStr substrateStr stateVectorStr =
+runAdaptiveCycleBridge : String -> String -> String -> String -> String -> IO ()
+runAdaptiveCycleBridge capacityLimitStr metricStr macroTargetStr substrateStr stateVectorStr = do
   let capLimit = parseNat capacityLimitStr
-      metricVal = parseInt metricStr
-      metric = case metricVal of
+  let metricVal = parseInt metricStr
+  let metric = case metricVal of
                  1 => Red
                  2 => Green
                  _ => Blue
-      macroTarget = case splitList (\c => c == ',') macroTargetStr of
-                      [x, y] => MkPixel (parseInt x) (parseInt y)
-                      _ => MkPixel 0 0
-      sub = parseSubstrate substrateStr
-      stateVec = parseVexel stateVectorStr
-      stateIn = MkUniverseState sub stateVec
-      stateOut = runAdaptiveCycle capLimit metric macroTarget stateIn
-  in serializeUniverseState stateOut
+  let macroTarget = case splitList (\c => c == ',') macroTargetStr of
+                      [x, y] => MkPixel (intToBoxInt (parseInt x)) (intToBoxInt (parseInt y))
+                      _ => MkPixel (intToBoxInt 0) (intToBoxInt 0)
+  let sub = parseSubstrate substrateStr
+  let stateVec = parseVexel stateVectorStr
+  let stateIn = MkUniverseState sub stateVec
+  let stateOut = runAdaptiveCycle capLimit metric macroTarget stateIn
+  exportUniverseState stateOut
 
-stepUniverseLocalizedBridge : String -> String -> String -> String -> String
-stepUniverseLocalizedBridge capacityLimitStr metricStr substrateStr stateVectorStr =
+stepUniverseLocalizedBridge : String -> String -> String -> String -> IO ()
+stepUniverseLocalizedBridge capacityLimitStr metricStr substrateStr stateVectorStr = do
   let capLimit = parseNat capacityLimitStr
-      metricVal = parseInt metricStr
-      metric = case metricVal of
+  let metricVal = parseInt metricStr
+  let metric = case metricVal of
                  1 => Red
                  2 => Green
                  _ => Blue
-      sub = parseSubstrate substrateStr
-      stateVec = parseVexel stateVectorStr
-      (subOut, stateVecOut) = stepUniverseLocalized capLimit metric sub stateVec
-      stateOut = MkUniverseState subOut stateVecOut
-  in serializeUniverseState stateOut
+  let sub = parseSubstrate substrateStr
+  let stateVec = parseVexel stateVectorStr
+  let (subOut, stateVecOut) = stepUniverseLocalized capLimit metric sub stateVec
+  let stateOut = MkUniverseState subOut stateVecOut
+  exportUniverseState stateOut
 
 -- EXPOSING TO JAVASCRIPT
 
-%foreign "javascript:lambda:(name, fn) => { globalThis[name] = fn; }"
-prim_exportFunction : String -> (String -> String -> String -> String -> String -> String) -> PrimIO ()
+%foreign "javascript:lambda:(name, fn) => { globalThis[name] = (a) => (b) => (c) => (d) => (e) => { fn(a)(b)(c)(d)(e)(); return 0; }; }"
+prim_exportFunction : String -> (String -> String -> String -> String -> String -> PrimIO ()) -> PrimIO ()
 
-%foreign "javascript:lambda:(name, fn) => { globalThis[name] = fn; }"
-prim_exportFunction4 : String -> (String -> String -> String -> String -> String) -> PrimIO ()
+%foreign "javascript:lambda:(name, fn) => { globalThis[name] = (a) => (b) => (c) => (d) => { fn(a)(b)(c)(d)(); return 0; }; }"
+prim_exportFunction4 : String -> (String -> String -> String -> String -> PrimIO ()) -> PrimIO ()
 
 main : IO ()
 main = do
-  primIO $ prim_exportFunction "idris_runAdaptiveCycle" runAdaptiveCycleBridge
-  primIO $ prim_exportFunction4 "idris_stepUniverseLocalized" stepUniverseLocalizedBridge
+  primIO $ prim_exportFunction "idris_runAdaptiveCycle" (\a,b,c,d,e => toPrim (runAdaptiveCycleBridge a b c d e))
+  primIO $ prim_exportFunction4 "idris_stepUniverseLocalized" (\a,b,c,d => toPrim (stepUniverseLocalizedBridge a b c d))
   putStrLn "Idris physics engine JSBridge initialized successfully!"

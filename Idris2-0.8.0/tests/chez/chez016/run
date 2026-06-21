@@ -1,0 +1,5 @@
+. ../../testutils.sh
+
+cd "folder with spaces" || exit
+
+run Main.idr

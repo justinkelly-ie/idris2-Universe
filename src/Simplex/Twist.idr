@@ -2,6 +2,7 @@ module Simplex.Twist
 
 import Math.Multiset
 import Math.Chromogeometry
+import Math.ExtendedCosmology
 import Simplex.Core
 import Data.List
 
@@ -303,3 +304,28 @@ chromogeometricHorizon sub =
               then False
               else sumNum >= 2 * sumDen
   in any loopAtHorizon loops
+
+-----------------------------------------------------------------------
+-- INVERSIVE CHROMOGEOMETRY CONIC BENDING & EDGE SPLITTING (Row 12)
+-----------------------------------------------------------------------
+
+||| Evaluates a Geometry point (x, y) on the conic section Ax² + Bxy + Cy² + Dx + Ey + F.
+public export
+evaluateConic : ConicCoeffs -> Geometry -> BoxInt
+evaluateConic (MkConicCoeffs a b c d e f) (MkPixel x y) =
+  (a * x * x) + (b * x * y) + (c * y * y) + (d * x) + (e * y) + f
+
+||| Filters or splits the substrate edges based on whether they lie within or satisfy a conic boundary condition.
+||| This implements Wildberger's inversive geometry edge-splitting to define bending path bounds.
+public export
+conicEdgeSplitting : ConicCoeffs -> Substrate -> Substrate
+conicEdgeSplitting coeffs sub =
+  let edges = multisetToList sub
+      filtered = filter (\((u, v), _) =>
+                          -- An edge satisfies the conic splitting condition if either endpoint evaluates <= 0
+                          let valU = evaluateConic coeffs u
+                              valV = evaluateConic coeffs v
+                          in valU <= 0 || valV <= 0
+                        ) edges
+  in fromList filtered
+

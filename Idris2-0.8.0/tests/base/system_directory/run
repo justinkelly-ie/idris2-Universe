@@ -1,0 +1,4 @@
+. ../../testutils.sh
+
+run --cg chez ReadDir.idr
+run --cg node ReadDir.idr

@@ -1,0 +1,4 @@
+. ../../testutils.sh
+
+check DLFail.idr
+check All.idr
