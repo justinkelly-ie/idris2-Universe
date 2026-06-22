@@ -5,7 +5,7 @@ import Math.SignedFraction
 import Math.Chromogeometry
 import Simplex.Core
 import Data.List
-import Boole.Hehner
+import Boole.FunctionalProbability
 import Boole.Hailperin
 
 %default total
