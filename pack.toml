@@ -25,3 +25,8 @@ ipkg = "ref1.ipkg"
 type = "local"
 path = "../idris2-QuickCheck"
 ipkg = "idris2-QuickCheck.ipkg"
+
+[custom.all.idris2-Boole]
+type = "local"
+path = "../Idris2-Boole"
+ipkg = "idris2-Boole.ipkg"
