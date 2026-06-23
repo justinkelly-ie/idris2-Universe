@@ -3,6 +3,7 @@ module Evolution.IndivisibleHistory
 import Math.BoxInt
 import Math.SignedFraction
 import Math.Chromogeometry
+import Math.Sing
 import Simplex.Core
 import Data.List
 import Boole.FunctionalProbability
@@ -75,26 +76,23 @@ sumOutSquared mset srcNode =
       counts = map (\tgt => transitionCount mset (srcNode, tgt)) targets
   in sum (map (\c => c * c) counts)
 
-||| Replaces the manual transition Probability with a strict Hehner normalization (Row 3).
-||| First we construct the non-linear squared amplitude mass multiset out of a source node.
-public export
-transitionMass : IndivisibleHistory q last_node -> Geometry -> Multiset BoxInt Geometry
-transitionMass hist srcNode =
-  let mset = historyTransitions hist
-      targets = outTargets mset srcNode
-  in buildMass targets mset
-  where
-    buildMass : List Geometry -> Multiset Integer (Geometry, Geometry) -> Multiset BoxInt Geometry
-    buildMass [] _ = ZeroM
-    buildMass (tgt :: rest) m =
-      let num = transitionCount m (srcNode, tgt)
-          numSq = num * num
-      in AddM tgt (intToBoxInt numSq) (buildMass rest m)
-
 ||| Computes the transition probability distribution using the exact Row 3 normalizer.
 public export
 targetDistribution : IndivisibleHistory q last_node -> Geometry -> List (Geometry, MSetFraction)
-targetDistribution hist srcNode = hehnerNormalize (transitionMass hist srcNode)
+targetDistribution hist srcNode =
+  let mset = historyTransitions hist
+      targets = outTargets mset srcNode
+      totMass = sumOutSquared mset srcNode
+  in if totMass == 0
+     then []
+     else map (normalizeTarget totMass mset) targets
+  where
+    normalizeTarget : Integer -> Multiset Integer (Geometry, Geometry) -> Geometry -> (Geometry, MSetFraction)
+    normalizeTarget tot mset tgt =
+      let num = transitionCount mset (srcNode, tgt)
+          numSq = num * num
+          frac = mkHehnerFraction (OneS tgt (intToBoxInt numSq)) (intToBoxInt tot)
+      in (tgt, stateProbability frac tgt)
 
 ||| Computes the exact transition probability p(i -> j).
 public export
