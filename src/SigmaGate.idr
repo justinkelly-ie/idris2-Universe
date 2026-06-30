@@ -3,6 +3,7 @@ module SigmaGate
 import Simplex.Core
 import Simplex.SigmaLinear
 import Math.Multiset
+import Math.LMultiset
 
 -----------------------------------------------------------------------
 -- SIGMA MELT ENGINE (Passes from Non-Linear Runtime to Linear Type)

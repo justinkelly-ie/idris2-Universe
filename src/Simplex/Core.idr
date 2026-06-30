@@ -1,6 +1,11 @@
 module Simplex.Core
 
 import public Math.Multiset
+import public Math.LMultiset
+import public Math.Maxel
+import public Math.DepMultiset
+import public Math.DepMaxel
+import public Math.DepVexel
 import public Math.IntPolynumber
 import public Math.Chromogeometry
 import public Math.Pixel

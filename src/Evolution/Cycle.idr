@@ -10,6 +10,7 @@ import Simplex.Core
 import Simplex.SigmaLinear
 
 import Math.Multiset
+import Math.LMultiset
 import Math.Polynumber
 import Math.IntPolynumber
 import Math.Chromogeometry
